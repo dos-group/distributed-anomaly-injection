@@ -1,0 +1,1383 @@
+{
+    "dba05be2-ebef-4307-ac1b-c7b17e59e9a6_services": {
+        "children": [
+            "vod-video@vod-video-18"
+        ]
+    }, 
+    "a0681b9a-860e-4729-b9f0-47c7f886843b_services": {
+        "children": [
+            "vod-balancer@vod-balancer-7"
+        ]
+    }, 
+    "d813a13d-6cd5-4d1c-add6-3661c8d7815f_services": {
+        "children": [
+            "vod-video@vod-video-4"
+        ]
+    }, 
+    "7885c109-985c-4705-802b-33d0779765fd": {
+        "hosts": [
+            "vod-client-6"
+        ], 
+        "vars": {
+            "iface": "tap113a2b79-cc", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally199.cit.tu-berlin.de", 
+            "hostname": "vod-client-6", 
+            "libvirt": "instance-00000b6a", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:dd:69:6d", 
+            "injector-endpoint": "10.0.42.28:7888", 
+            "port_id": "113a2b79-ccf4-4ede-8cb6-66c6451fe86c", 
+            "ansible_host": "10.0.42.28", 
+            "private_ip": "10.0.0.9"
+        }
+    }, 
+    "vod-video@vod-video-7": {
+        "hosts": [
+            "vod-video@vod-video-7"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.50:7889"
+        }
+    }, 
+    "6615bab8-e5fb-461d-8969-82a139bf02ef": {
+        "hosts": [
+            "vod-video-6"
+        ], 
+        "vars": {
+            "iface": "tapbe74730e-e2", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally193.cit.tu-berlin.de", 
+            "hostname": "vod-video-6", 
+            "libvirt": "instance-00000afb", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:29:12:01", 
+            "injector-endpoint": "10.0.42.17:7888", 
+            "port_id": "be74730e-e2e0-4d64-a7ca-3d40f1c7b7ce", 
+            "ansible_host": "10.0.42.17", 
+            "private_ip": "10.0.0.20"
+        }
+    }, 
+    "37af8ec0-04a3-4453-a319-6f6b47db3acb": {
+        "hosts": [
+            "vod-video-13"
+        ], 
+        "vars": {
+            "iface": "tapd3012858-21", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally197.cit.tu-berlin.de", 
+            "hostname": "vod-video-13", 
+            "libvirt": "instance-00000af2", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:e3:2d:51", 
+            "injector-endpoint": "10.0.42.26:7888", 
+            "port_id": "d3012858-2130-4c6e-a809-8202a81c3cbb", 
+            "ansible_host": "10.0.42.26", 
+            "private_ip": "10.0.0.14"
+        }
+    }, 
+    "wally183": {
+        "hosts": [
+            "wally183"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally183", 
+            "ansible_host": "wally183.cit.tu-berlin.de", 
+            "injector-endpoint": "wally183.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "wally198_vms": {
+        "children": [
+            "0ebbdd65-25d5-4d5e-bff7-2cbbb3395f6a", 
+            "904059b9-155e-42cc-bff1-ce76cabb89fd"
+        ]
+    }, 
+    "vod-balancer@vod-balancer-4": {
+        "hosts": [
+            "vod-balancer@vod-balancer-4"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.38:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-5": {
+        "hosts": [
+            "vod-balancer@vod-balancer-5"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.37:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-6": {
+        "hosts": [
+            "vod-balancer@vod-balancer-6"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.13:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-7": {
+        "hosts": [
+            "vod-balancer@vod-balancer-7"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.53:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-0": {
+        "hosts": [
+            "vod-balancer@vod-balancer-0"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.45:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-1": {
+        "hosts": [
+            "vod-balancer@vod-balancer-1"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.52:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-2": {
+        "hosts": [
+            "vod-balancer@vod-balancer-2"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.47:7889"
+        }
+    }, 
+    "vod-balancer@vod-balancer-3": {
+        "hosts": [
+            "vod-balancer@vod-balancer-3"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.51:7889"
+        }
+    }, 
+    "d813a13d-6cd5-4d1c-add6-3661c8d7815f": {
+        "hosts": [
+            "vod-video-4"
+        ], 
+        "vars": {
+            "iface": "tap65a95f69-f9", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally197.cit.tu-berlin.de", 
+            "hostname": "vod-video-4", 
+            "libvirt": "instance-00000b10", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:38:ea:67", 
+            "injector-endpoint": "10.0.42.39:7888", 
+            "port_id": "65a95f69-f9ed-4361-965a-f97148a8a5fe", 
+            "ansible_host": "10.0.42.39", 
+            "private_ip": "10.0.0.22"
+        }
+    }, 
+    "dba05be2-ebef-4307-ac1b-c7b17e59e9a6": {
+        "hosts": [
+            "vod-video-18"
+        ], 
+        "vars": {
+            "iface": "tap259b8b79-8d", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally197.cit.tu-berlin.de", 
+            "hostname": "vod-video-18", 
+            "libvirt": "instance-00000b01", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:90:86:20", 
+            "injector-endpoint": "10.0.42.32:7888", 
+            "port_id": "259b8b79-8d19-442a-a3c0-81b4e86d5a6f", 
+            "ansible_host": "10.0.42.32", 
+            "private_ip": "10.0.0.29"
+        }
+    }, 
+    "vod-video@vod-video-19": {
+        "hosts": [
+            "vod-video@vod-video-19"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.46:7889"
+        }
+    }, 
+    "02960a32-4741-4f43-aecd-fa9029cc9979": {
+        "hosts": [
+            "vod-client-5"
+        ], 
+        "vars": {
+            "iface": "tap054fd304-af", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally199.cit.tu-berlin.de", 
+            "hostname": "vod-client-5", 
+            "libvirt": "instance-00000b6d", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:d5:13:58", 
+            "injector-endpoint": "10.0.42.69:7888", 
+            "port_id": "054fd304-af08-49a4-a044-f3c92d39cb69", 
+            "ansible_host": "10.0.42.69", 
+            "private_ip": "10.0.0.46"
+        }
+    }, 
+    "11793a97-2f5a-4600-aad5-3425962e9fd2": {
+        "hosts": [
+            "vod-video-14"
+        ], 
+        "vars": {
+            "iface": "tap9e9f2405-57", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally195.cit.tu-berlin.de", 
+            "hostname": "vod-video-14", 
+            "libvirt": "instance-00000b13", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:d3:74:09", 
+            "injector-endpoint": "10.0.42.27:7888", 
+            "port_id": "9e9f2405-579e-4794-b108-8f72435637bf", 
+            "ansible_host": "10.0.42.27", 
+            "private_ip": "10.0.0.18"
+        }
+    }, 
+    "wally199": {
+        "hosts": [
+            "wally199"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally199", 
+            "ansible_host": "wally199.cit.tu-berlin.de", 
+            "injector-endpoint": "wally199.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "49efdac5-2c9a-417a-a8f6-590d3c7c3bc1": {
+        "hosts": [
+            "vod-video-0"
+        ], 
+        "vars": {
+            "iface": "tap84bfa19c-0c", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally197.cit.tu-berlin.de", 
+            "hostname": "vod-video-0", 
+            "libvirt": "instance-00000aec", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:1a:bf:2e", 
+            "injector-endpoint": "10.0.42.31:7888", 
+            "port_id": "84bfa19c-0c76-47de-ba28-8e0f300674d0", 
+            "ansible_host": "10.0.42.31", 
+            "private_ip": "10.0.0.6"
+        }
+    }, 
+    "a0681b9a-860e-4729-b9f0-47c7f886843b": {
+        "hosts": [
+            "vod-balancer-7"
+        ], 
+        "vars": {
+            "iface": "tapcaaa6b61-b5", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally183.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-7", 
+            "libvirt": "instance-00000b3d", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:b7:5b:52", 
+            "injector-endpoint": "10.0.42.53:7888", 
+            "port_id": "caaa6b61-b53e-4c14-8c3e-7e844007241a", 
+            "ansible_host": "10.0.42.53", 
+            "private_ip": "10.0.0.28"
+        }
+    }, 
+    "e2b6c39b-39d8-481d-85af-8fa976c68f28": {
+        "hosts": [
+            "vod-balancer-3"
+        ], 
+        "vars": {
+            "iface": "tap8bae764f-07", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally192.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-3", 
+            "libvirt": "instance-00000b31", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:0c:a4:66", 
+            "injector-endpoint": "10.0.42.51:7888", 
+            "port_id": "8bae764f-07ee-46df-8c4a-2eb427479cba", 
+            "ansible_host": "10.0.42.51", 
+            "private_ip": "10.0.0.36"
+        }
+    }, 
+    "wally": {
+        "hosts": [
+            "wally137.cit.tu-berlin.de", 
+            "wally133.cit.tu-berlin.de", 
+            "wally139.cit.tu-berlin.de", 
+            "wally132.cit.tu-berlin.de", 
+            "wally138.cit.tu-berlin.de", 
+            "wally135.cit.tu-berlin.de", 
+            "wally140.cit.tu-berlin.de", 
+            "wally145.cit.tu-berlin.de", 
+            "wally131.cit.tu-berlin.de", 
+            "wally147.cit.tu-berlin.de", 
+            "wally134.cit.tu-berlin.de", 
+            "wally146.cit.tu-berlin.de", 
+            "wally141.cit.tu-berlin.de", 
+            "wally136.cit.tu-berlin.de", 
+            "wally142.cit.tu-berlin.de", 
+            "wally148.cit.tu-berlin.de", 
+            "wally143.cit.tu-berlin.de", 
+            "wally149.cit.tu-berlin.de", 
+            "wally144.cit.tu-berlin.de"
+        ], 
+        "vars": {
+            "ansible_ssh_private_key_file": "~/.ssh/id_wally"
+        }
+    }, 
+    "wally193": {
+        "hosts": [
+            "wally193"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally193", 
+            "ansible_host": "wally193.cit.tu-berlin.de", 
+            "injector-endpoint": "wally193.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "wally192": {
+        "hosts": [
+            "wally192"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally192", 
+            "ansible_host": "wally192.cit.tu-berlin.de", 
+            "injector-endpoint": "wally192.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "wally192_vms": {
+        "children": [
+            "3e81ca96-11d3-498d-92ed-fdaa8c6c637a", 
+            "ea565c70-8536-416f-a71d-1e41d0c337c8", 
+            "e2b6c39b-39d8-481d-85af-8fa976c68f28", 
+            "5fd1a47c-7fed-4576-8382-34e4dfd763f8", 
+            "06cdc0db-c77b-46eb-a2ca-67e7f148b042"
+        ]
+    }, 
+    "0ebbdd65-25d5-4d5e-bff7-2cbbb3395f6a": {
+        "hosts": [
+            "vod-video-3"
+        ], 
+        "vars": {
+            "iface": "tapb84d4f46-11", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally198.cit.tu-berlin.de", 
+            "hostname": "vod-video-3", 
+            "libvirt": "instance-00000b1f", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:40:46:97", 
+            "injector-endpoint": "10.0.42.43:7888", 
+            "port_id": "b84d4f46-117f-4528-9de9-aa166a51b006", 
+            "ansible_host": "10.0.42.43", 
+            "private_ip": "10.0.0.26"
+        }
+    }, 
+    "1a4fcfa4-c4df-4a58-9a08-8e755805342a_services": {
+        "children": [
+            "vod-client@vod-client-7"
+        ]
+    }, 
+    "6e50b61a-0d4f-4f0a-98fe-be29cb6905e2_services": {
+        "children": [
+            "vod-balancer@vod-balancer-4"
+        ]
+    }, 
+    "6615bab8-e5fb-461d-8969-82a139bf02ef_services": {
+        "children": [
+            "vod-video@vod-video-6"
+        ]
+    }, 
+    "wally199_vms": {
+        "children": [
+            "02960a32-4741-4f43-aecd-fa9029cc9979", 
+            "7885c109-985c-4705-802b-33d0779765fd", 
+            "d434ed22-a5d7-4b20-b78a-df217821821c", 
+            "b8e8dc77-7e08-4621-9fcf-d50bcf799e99"
+        ]
+    }, 
+    "vod-video@vod-video-18": {
+        "hosts": [
+            "vod-video@vod-video-18"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.32:7889"
+        }
+    }, 
+    "vod-client@vod-client-2": {
+        "hosts": [
+            "vod-client@vod-client-2"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.55:7889"
+        }
+    }, 
+    "c7c2f271-2eb5-4db9-895a-7321dae28dd1_services": {
+        "children": [
+            "vod-balancer@vod-balancer-0"
+        ]
+    }, 
+    "vod-video@vod-video-10": {
+        "hosts": [
+            "vod-video@vod-video-10"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.40:7889"
+        }
+    }, 
+    "06cdc0db-c77b-46eb-a2ca-67e7f148b042": {
+        "hosts": [
+            "vod-balancer-5"
+        ], 
+        "vars": {
+            "iface": "tapec32c8ef-d5", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally192.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-5", 
+            "libvirt": "instance-00000b28", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:00:23:e2", 
+            "injector-endpoint": "10.0.42.37:7888", 
+            "port_id": "ec32c8ef-d53e-43cb-9270-60b8614af6f8", 
+            "ansible_host": "10.0.42.37", 
+            "private_ip": "10.0.0.27"
+        }
+    }, 
+    "vod-video@vod-video-12": {
+        "hosts": [
+            "vod-video@vod-video-12"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.44:7889"
+        }
+    }, 
+    "vod-video@vod-video-13": {
+        "hosts": [
+            "vod-video@vod-video-13"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.26:7889"
+        }
+    }, 
+    "vod-video@vod-video-14": {
+        "hosts": [
+            "vod-video@vod-video-14"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.27:7889"
+        }
+    }, 
+    "vod-video@vod-video-15": {
+        "hosts": [
+            "vod-video@vod-video-15"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.36:7889"
+        }
+    }, 
+    "vod-video@vod-video-16": {
+        "hosts": [
+            "vod-video@vod-video-16"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.29:7889"
+        }
+    }, 
+    "vod-video@vod-video-17": {
+        "hosts": [
+            "vod-video@vod-video-17"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.30:7889"
+        }
+    }, 
+    "vod-client": {
+        "children": [
+            "02960a32-4741-4f43-aecd-fa9029cc9979", 
+            "7885c109-985c-4705-802b-33d0779765fd", 
+            "b91327a1-0fa8-4986-ab36-ef034e37203a", 
+            "da500569-c887-4c37-9b5b-52667e430a0a", 
+            "d434ed22-a5d7-4b20-b78a-df217821821c", 
+            "b8e8dc77-7e08-4621-9fcf-d50bcf799e99", 
+            "50c3bac2-b229-44ec-9c79-1c31d189f348", 
+            "1a4fcfa4-c4df-4a58-9a08-8e755805342a"
+        ]
+    }, 
+    "0e104d90-2cab-43ab-84d1-344586f4ec56": {
+        "hosts": [
+            "vod-video-11"
+        ], 
+        "vars": {
+            "iface": "tap329b3b33-81", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally193.cit.tu-berlin.de", 
+            "hostname": "vod-video-11", 
+            "libvirt": "instance-00000af8", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:fe:45:e0", 
+            "injector-endpoint": "10.0.42.25:7888", 
+            "port_id": "329b3b33-8163-43a3-a592-e027fb98b7f7", 
+            "ansible_host": "10.0.42.25", 
+            "private_ip": "10.0.0.15"
+        }
+    }, 
+    "f5e58705-9222-4b2c-8c50-ec6045d52c02_services": {
+        "children": [
+            "vod-video@vod-video-16"
+        ]
+    }, 
+    "wally194": {
+        "hosts": [
+            "wally194"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally194", 
+            "ansible_host": "wally194.cit.tu-berlin.de", 
+            "injector-endpoint": "wally194.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "e2b6c39b-39d8-481d-85af-8fa976c68f28_services": {
+        "children": [
+            "vod-balancer@vod-balancer-3"
+        ]
+    }, 
+    "31ce99a8-a3f0-4a44-acd8-507072e8b139": {
+        "hosts": [
+            "vod-video-10"
+        ], 
+        "vars": {
+            "iface": "tap3af6c6b6-6a", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally193.cit.tu-berlin.de", 
+            "hostname": "vod-video-10", 
+            "libvirt": "instance-00000b07", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:af:9a:90", 
+            "injector-endpoint": "10.0.42.40:7888", 
+            "port_id": "3af6c6b6-6a26-4e99-971e-2cadf0319b53", 
+            "ansible_host": "10.0.42.40", 
+            "private_ip": "10.0.0.19"
+        }
+    }, 
+    "79bc8717-a969-4b2c-9f9b-6b5509ea8966_services": {
+        "children": [
+            "vod-video@vod-video-5"
+        ]
+    }, 
+    "6e50b61a-0d4f-4f0a-98fe-be29cb6905e2": {
+        "hosts": [
+            "vod-balancer-4"
+        ], 
+        "vars": {
+            "iface": "tapfc7d9258-92", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally183.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-4", 
+            "libvirt": "instance-00000b2e", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:57:99:4e", 
+            "injector-endpoint": "10.0.42.38:7888", 
+            "port_id": "fc7d9258-9201-4af2-82f1-aaef5862e923", 
+            "ansible_host": "10.0.42.38", 
+            "private_ip": "10.0.0.33"
+        }
+    }, 
+    "wally193_vms": {
+        "children": [
+            "ddaeea1e-8bbb-466d-8e7d-75ab1496cec5", 
+            "31ce99a8-a3f0-4a44-acd8-507072e8b139", 
+            "6615bab8-e5fb-461d-8969-82a139bf02ef", 
+            "0e104d90-2cab-43ab-84d1-344586f4ec56", 
+            "f5e58705-9222-4b2c-8c50-ec6045d52c02"
+        ]
+    }, 
+    "cc17f388-aa39-4763-98f4-70bcf29aabc6_services": {
+        "children": [
+            "vod-video@vod-video-8"
+        ]
+    }, 
+    "e30c8a69-1527-4fd6-bb58-0278e19d9573": {
+        "hosts": [
+            "vod-video-1"
+        ], 
+        "vars": {
+            "iface": "tap0cd9eaae-4d", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally194.cit.tu-berlin.de", 
+            "hostname": "vod-video-1", 
+            "libvirt": "instance-00000afe", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:18:23:36", 
+            "injector-endpoint": "10.0.42.20:7888", 
+            "port_id": "0cd9eaae-4dd2-448f-9208-73dd796d55cc", 
+            "ansible_host": "10.0.42.20", 
+            "private_ip": "10.0.0.16"
+        }
+    }, 
+    "ea565c70-8536-416f-a71d-1e41d0c337c8_services": {
+        "children": [
+            "vod-balancer@vod-balancer-1"
+        ]
+    }, 
+    "d434ed22-a5d7-4b20-b78a-df217821821c": {
+        "hosts": [
+            "vod-client-4"
+        ], 
+        "vars": {
+            "iface": "tap29cd5b6f-b9", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally199.cit.tu-berlin.de", 
+            "hostname": "vod-client-4", 
+            "libvirt": "instance-00000b61", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:62:0a:92", 
+            "injector-endpoint": "10.0.42.23:7888", 
+            "port_id": "29cd5b6f-b980-4ecc-96a8-64ee47b4feae", 
+            "ansible_host": "10.0.42.23", 
+            "private_ip": "10.0.0.44"
+        }
+    }, 
+    "b8e8dc77-7e08-4621-9fcf-d50bcf799e99": {
+        "hosts": [
+            "vod-client-2"
+        ], 
+        "vars": {
+            "iface": "tap3ed78ee0-4a", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally199.cit.tu-berlin.de", 
+            "hostname": "vod-client-2", 
+            "libvirt": "instance-00000b5e", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:ef:86:d6", 
+            "injector-endpoint": "10.0.42.55:7888", 
+            "port_id": "3ed78ee0-4af1-42d5-8901-d883abc5bf08", 
+            "ansible_host": "10.0.42.55", 
+            "private_ip": "10.0.0.38"
+        }
+    }, 
+    "vod-video@vod-video-0": {
+        "hosts": [
+            "vod-video@vod-video-0"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.31:7889"
+        }
+    }, 
+    "ddaeea1e-8bbb-466d-8e7d-75ab1496cec5": {
+        "hosts": [
+            "vod-video-9"
+        ], 
+        "vars": {
+            "iface": "tap9b301f26-e4", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally193.cit.tu-berlin.de", 
+            "hostname": "vod-video-9", 
+            "libvirt": "instance-00000b0d", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:da:96:29", 
+            "injector-endpoint": "10.0.42.41:7888", 
+            "port_id": "9b301f26-e453-4e9d-80b9-485d23453498", 
+            "ansible_host": "10.0.42.41", 
+            "private_ip": "10.0.0.12"
+        }
+    }, 
+    "vod-video@vod-video-11": {
+        "hosts": [
+            "vod-video@vod-video-11"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.25:7889"
+        }
+    }, 
+    "wally197": {
+        "hosts": [
+            "wally197"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally197", 
+            "ansible_host": "wally197.cit.tu-berlin.de", 
+            "injector-endpoint": "wally197.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "37bc618a-4fd1-4cd1-8a48-2248619399db": {
+        "hosts": [
+            "vod-video-17"
+        ], 
+        "vars": {
+            "iface": "tapb88de3a3-ba", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally197.cit.tu-berlin.de", 
+            "hostname": "vod-video-17", 
+            "libvirt": "instance-00000aef", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:1b:ba:e9", 
+            "injector-endpoint": "10.0.42.30:7888", 
+            "port_id": "b88de3a3-ba6d-4050-b315-af6a66749540", 
+            "ansible_host": "10.0.42.30", 
+            "private_ip": "10.0.0.13"
+        }
+    }, 
+    "37af8ec0-04a3-4453-a319-6f6b47db3acb_services": {
+        "children": [
+            "vod-video@vod-video-13"
+        ]
+    }, 
+    "wally200": {
+        "hosts": [
+            "wally200"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally200", 
+            "ansible_host": "wally200.cit.tu-berlin.de", 
+            "injector-endpoint": "wally200.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "79bc8717-a969-4b2c-9f9b-6b5509ea8966": {
+        "hosts": [
+            "vod-video-5"
+        ], 
+        "vars": {
+            "iface": "tap362011d7-3d", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally194.cit.tu-berlin.de", 
+            "hostname": "vod-video-5", 
+            "libvirt": "instance-00000b0a", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:76:87:3c", 
+            "injector-endpoint": "10.0.42.33:7888", 
+            "port_id": "362011d7-3dd2-4c27-86a4-4880b7c724b1", 
+            "ansible_host": "10.0.42.33", 
+            "private_ip": "10.0.0.4"
+        }
+    }, 
+    "3e81ca96-11d3-498d-92ed-fdaa8c6c637a_services": {
+        "children": [
+            "vod-balancer@vod-balancer-6"
+        ]
+    }, 
+    "7f8fd44b-fa7f-4a16-a51e-6a5abc7f2b05_services": {
+        "children": [
+            "vod-video@vod-video-12"
+        ]
+    }, 
+    "wally200_vms": {
+        "children": [
+            "b91327a1-0fa8-4986-ab36-ef034e37203a", 
+            "da500569-c887-4c37-9b5b-52667e430a0a", 
+            "50c3bac2-b229-44ec-9c79-1c31d189f348", 
+            "1a4fcfa4-c4df-4a58-9a08-8e755805342a"
+        ]
+    }, 
+    "904059b9-155e-42cc-bff1-ce76cabb89fd": {
+        "hosts": [
+            "vod-video-15"
+        ], 
+        "vars": {
+            "iface": "tapbcea6916-85", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally198.cit.tu-berlin.de", 
+            "hostname": "vod-video-15", 
+            "libvirt": "instance-00000b1c", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:e4:88:4c", 
+            "injector-endpoint": "10.0.42.36:7888", 
+            "port_id": "bcea6916-85eb-4498-a484-9a71dcc45546", 
+            "ansible_host": "10.0.42.36", 
+            "private_ip": "10.0.0.25"
+        }
+    }, 
+    "vod-video@vod-video-3": {
+        "hosts": [
+            "vod-video@vod-video-3"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.43:7889"
+        }
+    }, 
+    "06cdc0db-c77b-46eb-a2ca-67e7f148b042_services": {
+        "children": [
+            "vod-balancer@vod-balancer-5"
+        ]
+    }, 
+    "4cefcffc-7f4c-4c15-a176-0d935f6de343": {
+        "hosts": [
+            "vod-video-2"
+        ], 
+        "vars": {
+            "iface": "tap0187ecc5-20", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally194.cit.tu-berlin.de", 
+            "hostname": "vod-video-2", 
+            "libvirt": "instance-00000b04", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:3f:27:ad", 
+            "injector-endpoint": "10.0.42.34:7888", 
+            "port_id": "0187ecc5-20b4-472a-82fa-9475079408ec", 
+            "ansible_host": "10.0.42.34", 
+            "private_ip": "10.0.0.8"
+        }
+    }, 
+    "hypervisors": {
+        "children": [
+            "wally200", 
+            "wally199", 
+            "wally198", 
+            "wally193", 
+            "wally192", 
+            "wally195", 
+            "wally194", 
+            "wally197", 
+            "wally183"
+        ]
+    }, 
+    "3e81ca96-11d3-498d-92ed-fdaa8c6c637a": {
+        "hosts": [
+            "vod-balancer-6"
+        ], 
+        "vars": {
+            "iface": "tapce0f5d9b-74", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally192.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-6", 
+            "libvirt": "instance-00000b37", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:cd:de:b0", 
+            "injector-endpoint": "10.0.42.13:7888", 
+            "port_id": "ce0f5d9b-74ad-49b3-aaee-8d0e5d62d991", 
+            "ansible_host": "10.0.42.13", 
+            "private_ip": "10.0.0.34"
+        }
+    }, 
+    "da500569-c887-4c37-9b5b-52667e430a0a": {
+        "hosts": [
+            "vod-client-3"
+        ], 
+        "vars": {
+            "iface": "tape76e279f-f4", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally200.cit.tu-berlin.de", 
+            "hostname": "vod-client-3", 
+            "libvirt": "instance-00000b64", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:b2:73:5b", 
+            "injector-endpoint": "10.0.42.61:7888", 
+            "port_id": "e76e279f-f455-4778-9063-8dd53241d71a", 
+            "ansible_host": "10.0.42.61", 
+            "private_ip": "10.0.0.42"
+        }
+    }, 
+    "5fd1a47c-7fed-4576-8382-34e4dfd763f8_services": {
+        "children": [
+            "vod-balancer@vod-balancer-2"
+        ]
+    }, 
+    "0ebbdd65-25d5-4d5e-bff7-2cbbb3395f6a_services": {
+        "children": [
+            "vod-video@vod-video-3"
+        ]
+    }, 
+    "5fd1a47c-7fed-4576-8382-34e4dfd763f8": {
+        "hosts": [
+            "vod-balancer-2"
+        ], 
+        "vars": {
+            "iface": "tap4c6dab82-28", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally192.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-2", 
+            "libvirt": "instance-00000b2b", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:e1:ae:a8", 
+            "injector-endpoint": "10.0.42.47:7888", 
+            "port_id": "4c6dab82-280a-4ecd-8f43-4869e0c9eb5d", 
+            "ansible_host": "10.0.42.47", 
+            "private_ip": "10.0.0.24"
+        }
+    }, 
+    "7f8fd44b-fa7f-4a16-a51e-6a5abc7f2b05": {
+        "hosts": [
+            "vod-video-12"
+        ], 
+        "vars": {
+            "iface": "tapdc8ccece-ae", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally195.cit.tu-berlin.de", 
+            "hostname": "vod-video-12", 
+            "libvirt": "instance-00000b16", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:5f:78:28", 
+            "injector-endpoint": "10.0.42.44:7888", 
+            "port_id": "dc8ccece-ae99-48c5-935c-620ac4cfbb25", 
+            "ansible_host": "10.0.42.44", 
+            "private_ip": "10.0.0.21"
+        }
+    }, 
+    "11793a97-2f5a-4600-aad5-3425962e9fd2_services": {
+        "children": [
+            "vod-video@vod-video-14"
+        ]
+    }, 
+    "b8e8dc77-7e08-4621-9fcf-d50bcf799e99_services": {
+        "children": [
+            "vod-client@vod-client-2"
+        ]
+    }, 
+    "14e09f5d-34a5-4e44-9a92-1538657bf07d_services": {
+        "children": [
+            "vod-video@vod-video-7"
+        ]
+    }, 
+    "wally183_vms": {
+        "children": [
+            "a0681b9a-860e-4729-b9f0-47c7f886843b", 
+            "c7c2f271-2eb5-4db9-895a-7321dae28dd1", 
+            "6e50b61a-0d4f-4f0a-98fe-be29cb6905e2"
+        ]
+    }, 
+    "49efdac5-2c9a-417a-a8f6-590d3c7c3bc1_services": {
+        "children": [
+            "vod-video@vod-video-0"
+        ]
+    }, 
+    "b91327a1-0fa8-4986-ab36-ef034e37203a_services": {
+        "children": [
+            "vod-client@vod-client-0"
+        ]
+    }, 
+    "d434ed22-a5d7-4b20-b78a-df217821821c_services": {
+        "children": [
+            "vod-client@vod-client-4"
+        ]
+    }, 
+    "cc17f388-aa39-4763-98f4-70bcf29aabc6": {
+        "hosts": [
+            "vod-video-8"
+        ], 
+        "vars": {
+            "iface": "tap9b4e988d-d2", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally194.cit.tu-berlin.de", 
+            "hostname": "vod-video-8", 
+            "libvirt": "instance-00000b22", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:03:bc:62", 
+            "injector-endpoint": "10.0.42.35:7888", 
+            "port_id": "9b4e988d-d25a-45f0-9496-95390ee1d417", 
+            "ansible_host": "10.0.42.35", 
+            "private_ip": "10.0.0.10"
+        }
+    }, 
+    "31ce99a8-a3f0-4a44-acd8-507072e8b139_services": {
+        "children": [
+            "vod-video@vod-video-10"
+        ]
+    }, 
+    "vod-video@vod-video-8": {
+        "hosts": [
+            "vod-video@vod-video-8"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.35:7889"
+        }
+    }, 
+    "vod-video@vod-video-9": {
+        "hosts": [
+            "vod-video@vod-video-9"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.41:7889"
+        }
+    }, 
+    "vod-video@vod-video-6": {
+        "hosts": [
+            "vod-video@vod-video-6"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.17:7889"
+        }
+    }, 
+    "da500569-c887-4c37-9b5b-52667e430a0a_services": {
+        "children": [
+            "vod-client@vod-client-3"
+        ]
+    }, 
+    "vod-video@vod-video-4": {
+        "hosts": [
+            "vod-video@vod-video-4"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.39:7889"
+        }
+    }, 
+    "vod-video@vod-video-5": {
+        "hosts": [
+            "vod-video@vod-video-5"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.33:7889"
+        }
+    }, 
+    "vod-video@vod-video-2": {
+        "hosts": [
+            "vod-video@vod-video-2"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.34:7889"
+        }
+    }, 
+    "50c3bac2-b229-44ec-9c79-1c31d189f348": {
+        "hosts": [
+            "vod-client-1"
+        ], 
+        "vars": {
+            "iface": "tapc063b7ce-d1", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally200.cit.tu-berlin.de", 
+            "hostname": "vod-client-1", 
+            "libvirt": "instance-00000b5b", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:e6:d6:91", 
+            "injector-endpoint": "10.0.42.60:7888", 
+            "port_id": "c063b7ce-d105-483e-a2df-373c609664bb", 
+            "ansible_host": "10.0.42.60", 
+            "private_ip": "10.0.0.7"
+        }
+    }, 
+    "vod-balancer": {
+        "children": [
+            "a0681b9a-860e-4729-b9f0-47c7f886843b", 
+            "c7c2f271-2eb5-4db9-895a-7321dae28dd1", 
+            "3e81ca96-11d3-498d-92ed-fdaa8c6c637a", 
+            "ea565c70-8536-416f-a71d-1e41d0c337c8", 
+            "e2b6c39b-39d8-481d-85af-8fa976c68f28", 
+            "6e50b61a-0d4f-4f0a-98fe-be29cb6905e2", 
+            "5fd1a47c-7fed-4576-8382-34e4dfd763f8", 
+            "06cdc0db-c77b-46eb-a2ca-67e7f148b042"
+        ]
+    }, 
+    "vod-video@vod-video-1": {
+        "hosts": [
+            "vod-video@vod-video-1"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.20:7889"
+        }
+    }, 
+    "4222f9a7-d4d6-4a5b-adb2-91999eeff4b0_services": {
+        "children": [
+            "vod-video@vod-video-19"
+        ]
+    }, 
+    "1a4fcfa4-c4df-4a58-9a08-8e755805342a": {
+        "hosts": [
+            "vod-client-7"
+        ], 
+        "vars": {
+            "iface": "tap9f786e8d-29", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally200.cit.tu-berlin.de", 
+            "hostname": "vod-client-7", 
+            "libvirt": "instance-00000b58", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:2a:ae:bf", 
+            "injector-endpoint": "10.0.42.49:7888", 
+            "port_id": "9f786e8d-2958-4096-9d4b-cf22091988a3", 
+            "ansible_host": "10.0.42.49", 
+            "private_ip": "10.0.0.37"
+        }
+    }, 
+    "vod-client@vod-client-3": {
+        "hosts": [
+            "vod-client@vod-client-3"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.61:7889"
+        }
+    }, 
+    "vod-client@vod-client-0": {
+        "hosts": [
+            "vod-client@vod-client-0"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.65:7889"
+        }
+    }, 
+    "vod-client@vod-client-1": {
+        "hosts": [
+            "vod-client@vod-client-1"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.60:7889"
+        }
+    }, 
+    "vod-client@vod-client-6": {
+        "hosts": [
+            "vod-client@vod-client-6"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.28:7889"
+        }
+    }, 
+    "vod-client@vod-client-7": {
+        "hosts": [
+            "vod-client@vod-client-7"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.49:7889"
+        }
+    }, 
+    "vod-client@vod-client-4": {
+        "hosts": [
+            "vod-client@vod-client-4"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.23:7889"
+        }
+    }, 
+    "vod-client@vod-client-5": {
+        "hosts": [
+            "vod-client@vod-client-5"
+        ], 
+        "vars": {
+            "injector-endpoint": "10.0.42.69:7889"
+        }
+    }, 
+    "4cefcffc-7f4c-4c15-a176-0d935f6de343_services": {
+        "children": [
+            "vod-video@vod-video-2"
+        ]
+    }, 
+    "904059b9-155e-42cc-bff1-ce76cabb89fd_services": {
+        "children": [
+            "vod-video@vod-video-15"
+        ]
+    }, 
+    "37bc618a-4fd1-4cd1-8a48-2248619399db_services": {
+        "children": [
+            "vod-video@vod-video-17"
+        ]
+    }, 
+    "0e104d90-2cab-43ab-84d1-344586f4ec56_services": {
+        "children": [
+            "vod-video@vod-video-11"
+        ]
+    }, 
+    "4222f9a7-d4d6-4a5b-adb2-91999eeff4b0": {
+        "hosts": [
+            "vod-video-19"
+        ], 
+        "vars": {
+            "iface": "tapbba13724-98", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally195.cit.tu-berlin.de", 
+            "hostname": "vod-video-19", 
+            "libvirt": "instance-00000b19", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:8f:ad:86", 
+            "injector-endpoint": "10.0.42.46:7888", 
+            "port_id": "bba13724-98b0-49f4-8f19-ab44f1816526", 
+            "ansible_host": "10.0.42.46", 
+            "private_ip": "10.0.0.23"
+        }
+    }, 
+    "50c3bac2-b229-44ec-9c79-1c31d189f348_services": {
+        "children": [
+            "vod-client@vod-client-1"
+        ]
+    }, 
+    "vod-video": {
+        "children": [
+            "14e09f5d-34a5-4e44-9a92-1538657bf07d", 
+            "cc17f388-aa39-4763-98f4-70bcf29aabc6", 
+            "0ebbdd65-25d5-4d5e-bff7-2cbbb3395f6a", 
+            "4222f9a7-d4d6-4a5b-adb2-91999eeff4b0", 
+            "904059b9-155e-42cc-bff1-ce76cabb89fd", 
+            "7f8fd44b-fa7f-4a16-a51e-6a5abc7f2b05", 
+            "11793a97-2f5a-4600-aad5-3425962e9fd2", 
+            "d813a13d-6cd5-4d1c-add6-3661c8d7815f", 
+            "ddaeea1e-8bbb-466d-8e7d-75ab1496cec5", 
+            "79bc8717-a969-4b2c-9f9b-6b5509ea8966", 
+            "31ce99a8-a3f0-4a44-acd8-507072e8b139", 
+            "4cefcffc-7f4c-4c15-a176-0d935f6de343", 
+            "dba05be2-ebef-4307-ac1b-c7b17e59e9a6", 
+            "e30c8a69-1527-4fd6-bb58-0278e19d9573", 
+            "6615bab8-e5fb-461d-8969-82a139bf02ef", 
+            "0e104d90-2cab-43ab-84d1-344586f4ec56", 
+            "f5e58705-9222-4b2c-8c50-ec6045d52c02", 
+            "37af8ec0-04a3-4453-a319-6f6b47db3acb", 
+            "37bc618a-4fd1-4cd1-8a48-2248619399db", 
+            "49efdac5-2c9a-417a-a8f6-590d3c7c3bc1"
+        ]
+    }, 
+    "e30c8a69-1527-4fd6-bb58-0278e19d9573_services": {
+        "children": [
+            "vod-video@vod-video-1"
+        ]
+    }, 
+    "wally195": {
+        "hosts": [
+            "wally195"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally195", 
+            "ansible_host": "wally195.cit.tu-berlin.de", 
+            "injector-endpoint": "wally195.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "14e09f5d-34a5-4e44-9a92-1538657bf07d": {
+        "hosts": [
+            "vod-video-7"
+        ], 
+        "vars": {
+            "iface": "tapeb34a80f-39", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally195.cit.tu-berlin.de", 
+            "hostname": "vod-video-7", 
+            "libvirt": "instance-00000b25", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:67:5f:fd", 
+            "injector-endpoint": "10.0.42.50:7888", 
+            "port_id": "eb34a80f-3962-499b-9d8e-43eaee23b7ce", 
+            "ansible_host": "10.0.42.50", 
+            "private_ip": "10.0.0.32"
+        }
+    }, 
+    "b91327a1-0fa8-4986-ab36-ef034e37203a": {
+        "hosts": [
+            "vod-client-0"
+        ], 
+        "vars": {
+            "iface": "tapc00e1a4a-09", 
+            "vnf_service_regex": "vod-client", 
+            "hypervisor": "wally200.cit.tu-berlin.de", 
+            "hostname": "vod-client-0", 
+            "libvirt": "instance-00000b67", 
+            "vnf_service": "vod-client", 
+            "mac_addr": "fa:16:3e:51:da:42", 
+            "injector-endpoint": "10.0.42.65:7888", 
+            "port_id": "c00e1a4a-09b8-4986-9557-da2a8af8c12c", 
+            "ansible_host": "10.0.42.65", 
+            "private_ip": "10.0.0.40"
+        }
+    }, 
+    "ea565c70-8536-416f-a71d-1e41d0c337c8": {
+        "hosts": [
+            "vod-balancer-1"
+        ], 
+        "vars": {
+            "iface": "tap9f15a1f9-a6", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally192.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-1", 
+            "libvirt": "instance-00000b34", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:a0:1a:2f", 
+            "injector-endpoint": "10.0.42.52:7888", 
+            "port_id": "9f15a1f9-a6d8-422d-a2c7-1a55cee285b5", 
+            "ansible_host": "10.0.42.52", 
+            "private_ip": "10.0.0.35"
+        }
+    }, 
+    "ddaeea1e-8bbb-466d-8e7d-75ab1496cec5_services": {
+        "children": [
+            "vod-video@vod-video-9"
+        ]
+    }, 
+    "wally197_vms": {
+        "children": [
+            "d813a13d-6cd5-4d1c-add6-3661c8d7815f", 
+            "dba05be2-ebef-4307-ac1b-c7b17e59e9a6", 
+            "37af8ec0-04a3-4453-a319-6f6b47db3acb", 
+            "37bc618a-4fd1-4cd1-8a48-2248619399db", 
+            "49efdac5-2c9a-417a-a8f6-590d3c7c3bc1"
+        ]
+    }, 
+    "f5e58705-9222-4b2c-8c50-ec6045d52c02": {
+        "hosts": [
+            "vod-video-16"
+        ], 
+        "vars": {
+            "iface": "tapfa0fae70-36", 
+            "vnf_service_regex": "vod-video", 
+            "hypervisor": "wally193.cit.tu-berlin.de", 
+            "hostname": "vod-video-16", 
+            "libvirt": "instance-00000af5", 
+            "vnf_service": "vod-video", 
+            "mac_addr": "fa:16:3e:f3:fc:23", 
+            "injector-endpoint": "10.0.42.29:7888", 
+            "port_id": "fa0fae70-3609-4fb7-98d1-d646d2f05e85", 
+            "ansible_host": "10.0.42.29", 
+            "private_ip": "10.0.0.5"
+        }
+    }, 
+    "wally198": {
+        "hosts": [
+            "wally198"
+        ], 
+        "vars": {
+            "iface": "em1", 
+            "hostname": "wally198", 
+            "ansible_host": "wally198.cit.tu-berlin.de", 
+            "injector-endpoint": "wally198.cit.tu-berlin.de:7888"
+        }
+    }, 
+    "7885c109-985c-4705-802b-33d0779765fd_services": {
+        "children": [
+            "vod-client@vod-client-6"
+        ]
+    }, 
+    "wally195_vms": {
+        "children": [
+            "14e09f5d-34a5-4e44-9a92-1538657bf07d", 
+            "4222f9a7-d4d6-4a5b-adb2-91999eeff4b0", 
+            "7f8fd44b-fa7f-4a16-a51e-6a5abc7f2b05", 
+            "11793a97-2f5a-4600-aad5-3425962e9fd2"
+        ]
+    }, 
+    "wally194_vms": {
+        "children": [
+            "cc17f388-aa39-4763-98f4-70bcf29aabc6", 
+            "79bc8717-a969-4b2c-9f9b-6b5509ea8966", 
+            "4cefcffc-7f4c-4c15-a176-0d935f6de343", 
+            "e30c8a69-1527-4fd6-bb58-0278e19d9573"
+        ]
+    }, 
+    "c7c2f271-2eb5-4db9-895a-7321dae28dd1": {
+        "hosts": [
+            "vod-balancer-0"
+        ], 
+        "vars": {
+            "iface": "tap04aed909-28", 
+            "vnf_service_regex": "vod-balancer", 
+            "hypervisor": "wally183.cit.tu-berlin.de", 
+            "hostname": "vod-balancer-0", 
+            "libvirt": "instance-00000b3a", 
+            "vnf_service": "vod-balancer", 
+            "mac_addr": "fa:16:3e:ea:02:8e", 
+            "injector-endpoint": "10.0.42.45:7888", 
+            "port_id": "04aed909-282e-4c7b-a98a-ae0b7a46f78a", 
+            "ansible_host": "10.0.42.45", 
+            "private_ip": "10.0.0.31"
+        }
+    }, 
+    "video-on-demand": {
+        "children": [
+            "vod-balancer", 
+            "vod-video", 
+            "vod-client"
+        ]
+    }, 
+    "02960a32-4741-4f43-aecd-fa9029cc9979_services": {
+        "children": [
+            "vod-client@vod-client-5"
+        ]
+    }
+}

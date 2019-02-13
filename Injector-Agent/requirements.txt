@@ -1,0 +1,9 @@
+setuptools
+tcconfig
+netifaces
+requests
+psutil
+argparse
+tabulate
+flask
+flask_restplus
