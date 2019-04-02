@@ -143,9 +143,9 @@ def get_parametrized_anomalies():
                 SERVICE, "--num_forks={{300 800}} --memory={{50 100}} --sleep={{3000 6000}}"), \
             ],
         "disk_pollution": [ \
-            #ParameterizedAnomaly(
-            #    ProcessAnomalyTerminating("disk_pollution", "anomalies/binaries/disk_pollution", "-c -n -f"), \
-            #    PHYSICAL, "--write-size={{300 600}} --sleep={{7 12}} --max-wsize=3000"), \*/
+            ParameterizedAnomaly(
+                ProcessAnomalyTerminating("disk_pollution", "anomalies/binaries/disk_pollution", "-c -n -f"), \
+                PHYSICAL, "--write-size={{300 600}} --sleep={{7 12}} --max-wsize=3000"), \
             ParameterizedAnomaly(
                 ProcessAnomalyTerminating("disk_pollution", "anomalies/binaries/disk_pollution", "-c -n -f"), \
                 VIRTUAL, "--write-size={{500 800}} --sleep={{7 12}} --max-wsize=10000"), \
@@ -154,9 +154,9 @@ def get_parametrized_anomalies():
                 SERVICE, "--write-size={{500 800}} --sleep={{7 12}} --max-wsize=10000"), \
             ],
         "disk_pollution_tmp": [ \
-            #ParameterizedAnomaly(
-            #    ProcessAnomalyTerminating("disk_pollution_tmp", "anomalies/binaries/disk_pollution", "-t"), \
-            #    PHYSICAL, "--write-size={{300 600}} --sleep={{7 12}} --max-wsize=3000"), \
+            ParameterizedAnomaly(
+                ProcessAnomalyTerminating("disk_pollution_tmp", "anomalies/binaries/disk_pollution", "-t"), \
+                PHYSICAL, "--write-size={{300 600}} --sleep={{7 12}} --max-wsize=3000"), \
             ParameterizedAnomaly(
                 ProcessAnomalyTerminating("disk_pollution_tmp", "anomalies/binaries/disk_pollution", "-t"), \
                 VIRTUAL, "--write-size={{500 800}} --sleep={{7 12}} --max-wsize=10000"), \
@@ -165,9 +165,9 @@ def get_parametrized_anomalies():
                 SERVICE, "--write-size={{500 800}} --sleep={{7 12}} --max-wsize=10000"), \
             ],
         "file_pointer_wasting": [ \
-            #ParameterizedAnomaly(
-            #    ProcessAnomalyTerminating("file_pointer_wasting", "anomalies/binaries/disk_pollution", "-n -c"), \
-            #    PHYSICAL, "--sleep={{1 4}} --max-wsize=3000"), \
+            ParameterizedAnomaly(
+                ProcessAnomalyTerminating("file_pointer_wasting", "anomalies/binaries/disk_pollution", "-n -c"), \
+                PHYSICAL, "--sleep={{1 4}} --max-wsize=3000"), \
             ParameterizedAnomaly(
                 ProcessAnomalyTerminating("file_pointer_wasting", "anomalies/binaries/disk_pollution", "-n -c"), \
                 VIRTUAL, "--sleep={{1 4}} --max-wsize=10000"), \
