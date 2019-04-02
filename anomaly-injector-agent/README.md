@@ -1,13 +1,13 @@
 Distributed Anoamly Injector
 ============================
 
-Application for injecting system anomalyGroups via web service requests.
+Application for injecting system anomalies via web service requests.
 
 
 Install instructions
 --------------------
 
-Most anomalyGroups rely on target-specific compiled binary files.
+Most anomalies rely on target-specific compiled binary files.
 After cloning, execute:
 ```shell
 make.sh

@@ -8,13 +8,6 @@ __pycache__/
 *.o
 *~
 
-#Built C binaries
-fork_flooding
-mem_alloc
-disk_pollution
-anomalyGroups/binaries/stress-ng
-anomalyGroups/binaries/cpulimit
-
 # Distribution / packaging
 .Python
 env/
@@ -104,5 +97,5 @@ ENV/
 .project
 
 #exclude compiled binaries
-anomalyGroups/binaries/
+anomalies/binaries/
 
