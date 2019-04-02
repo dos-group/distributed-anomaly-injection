@@ -95,6 +95,7 @@ ENV/
 *.iml
 .cproject
 .project
+.settings/
 
 #exclude compiled binaries
 anomalies/binaries/
