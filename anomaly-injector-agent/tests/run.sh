@@ -1,5 +1,7 @@
 #!/bin/bash
 
-docker build -t alexanderacker/anomaly_injector ../
-docker start $(docker create --net="host" --pid="host" --privileged alexanderacker/anomaly_injector -host=wally166 -api-port 7999)
+REPO=teambitflow/anomaly-injector-agent
+
+docker build -t "$REPO" ../
+docker start $(docker create --net="host" --pid="host" --privileged "$REPO" -host=wally166 -api-port 7999)
 

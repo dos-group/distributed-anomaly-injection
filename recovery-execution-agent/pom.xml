@@ -46,7 +46,6 @@
         </plugins>
     </build>
     <dependencies>
-        <bitflow4j_gridow4j dependencies -->
         <dependency>
             <groupId>bitflow4j</groupId>
             <artifactId>bitflow4j</artifactId>

@@ -1,7 +1,7 @@
-SRC_ROOT_DEST = anomalyGroups/c_src
+SRC_ROOT_DEST = anomalies/c_src
 SRC_DIRS = disk_pollution fork_flooding mem_alloc
 
-BIN_ROOT_DEST = anomalyGroups/binaries
+BIN_ROOT_DEST = anomalies/binaries
 BIN_NAMES = disk_pollution fork_flooding mem_alloc stress-ng stress cpulimit
 
 default: all
