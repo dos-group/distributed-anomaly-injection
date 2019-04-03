@@ -23,16 +23,16 @@ WORKDIR /src/stress-ng
 RUN STATIC=1 make
 
 WORKDIR /src/cpulimit
-RUN STATIC=1 make
+RUN make
 
 WORKDIR /src/c_src/disk_pollution
-RUN STATIC=1 make
+RUN make clean && make
 
 WORKDIR /src/c_src/fork_flooding
-RUN STATIC=1 make
+RUN make clean && make
 
 WORKDIR /src/c_src/mem_alloc
-RUN STATIC=1 make
+RUN make clean && make
 
 # build alpine image
 FROM python:3.6-alpine
@@ -54,6 +54,18 @@ COPY --from=build /src/c_src/disk_pollution/disk_pollution .
 COPY --from=build /src/c_src/fork_flooding/fork_flooding .
 COPY --from=build /src/c_src/mem_alloc/mem_alloc .
 COPY --from=build /src/c_src/stress/stress .
+RUN cp cpulimit vnf_cpulimit && \
+    cp fork_flooding vnf_fork_flooding && \
+    cp stress vnf_stress && \
+    cp disk_pollution vnf_disk_pollution && \
+    cp mem_alloc vnf_mem_alloc && \
+    cp stress-ng vnf_stress-ng
+
+RUN apk --no-cache add ca-certificates wget && \
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk && \
+    apk add glibc-2.29-r0.apk
+    
 # install pip dependencies
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
