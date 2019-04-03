@@ -34,18 +34,20 @@ RUN make clean && make
 WORKDIR /src/c_src/mem_alloc
 RUN make clean && make
 
-# build alpine image
-FROM python:3.6-alpine
+# build slim stretch image
+FROM python:3.6-slim-stretch
 
-# install dependencies
-RUN apk add --no-cache gcc \
-    libc-dev \
-    linux-headers \
+RUN apt-get update && apt-get install -y \
+    gcc \
+    wget \
+    iptables \
+    iproute \
     iproute2 \
-    iptables
+&& rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /usr/src/app
 COPY . .
+
 # copy binaries of build image
 WORKDIR anomalies/binaries
 COPY --from=build /src/stress-ng/stress-ng .
@@ -59,14 +61,8 @@ RUN cp cpulimit vnf_cpulimit && \
     cp stress vnf_stress && \
     cp disk_pollution vnf_disk_pollution && \
     cp mem_alloc vnf_mem_alloc && \
-    cp stress-ng vnf_stress-ng
+    cp stress-ng vnf_stress-ng && \
+    cd /usr/src/app && pip install --no-cache-dir -r requirements.txt
 
-RUN apk --no-cache add ca-certificates wget && \
-    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk && \
-    apk add glibc-2.29-r0.apk
-    
-# install pip dependencies
 WORKDIR /usr/src/app
-RUN pip install --no-cache-dir -r requirements.txt
 ENTRYPOINT [ "python3.6", "./injector_agent.py" ]
