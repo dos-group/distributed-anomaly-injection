@@ -62,7 +62,7 @@ RUN cp cpulimit vnf_cpulimit && \
     cp stress vnf_stress && \
     cp disk_pollution vnf_disk_pollution && \
     cp mem_alloc vnf_mem_alloc && \
-    cp stress-ng vnf_stress-ng && \
+    cp stress-ng vnf_stress-ng
 
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
