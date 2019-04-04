@@ -42,7 +42,9 @@ RUN apk add --no-cache gcc \
     libc-dev \
     linux-headers \
     iproute2 \
-    iptables
+    iptables \
+    libc6-compat \
+    argp-standalone
 
 WORKDIR /usr/src/app
 COPY . .

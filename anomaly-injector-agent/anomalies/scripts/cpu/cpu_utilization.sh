@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 MY_PATH="`( cd \"$MY_PATH\" && pwd )`"  # absolutized and normalized
 
