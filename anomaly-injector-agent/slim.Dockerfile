@@ -23,31 +23,32 @@ WORKDIR /src/stress-ng
 RUN STATIC=1 make
 
 WORKDIR /src/cpulimit
-RUN STATIC=1 make
+RUN make
 
 WORKDIR /src/c_src/disk_pollution
-RUN STATIC=1 make
+RUN make clean && make
 
 WORKDIR /src/c_src/fork_flooding
-RUN STATIC=1 make
+RUN make clean && make
 
 WORKDIR /src/c_src/mem_alloc
-RUN STATIC=1 make
+RUN make clean && make
 
-# build alpine image
-FROM python:3.6-alpine
+# build slim stretch image
+FROM python:3.6-slim-stretch
 
-# install dependencies
-RUN apk add --no-cache gcc \
-    libc-dev \
-    linux-headers \
-    iproute2 \
+RUN apt-get update && apt-get install -y \
+    gcc \
+    wget \
     iptables \
-    libc6-compat \
-    argp-standalone
+    iproute \
+    iproute2 \
+    && rm -rf /var/lib/apt/lists/* 
+
 
 WORKDIR /usr/src/app
 COPY . .
+
 # copy binaries of build image
 WORKDIR anomalies/binaries
 COPY --from=build /src/stress-ng/stress-ng .
@@ -56,7 +57,15 @@ COPY --from=build /src/c_src/disk_pollution/disk_pollution .
 COPY --from=build /src/c_src/fork_flooding/fork_flooding .
 COPY --from=build /src/c_src/mem_alloc/mem_alloc .
 COPY --from=build /src/c_src/stress/stress .
-# install pip dependencies
+RUN cp cpulimit vnf_cpulimit && \
+    cp fork_flooding vnf_fork_flooding && \
+    cp stress vnf_stress && \
+    cp disk_pollution vnf_disk_pollution && \
+    cp mem_alloc vnf_mem_alloc && \
+    cp stress-ng vnf_stress-ng && \
+
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
+
 ENTRYPOINT [ "python3.6", "./injector_agent.py" ]
+
