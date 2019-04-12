@@ -1,20 +1,23 @@
 package anomaly.experiment.controller.main;
 
 import anomaly.experiment.controller.DistributedExperimentController;
-import anomaly.experiment.controller.objects.AnomalyGroup;
+import anomaly.experiment.controller.objects.AnomalyScenario;
 import anomaly.experiment.controller.objects.CollectorAgentController;
 import anomaly.experiment.controller.objects.Host;
 import anomaly.experiment.controller.objects.InjectorAgentController;
 import anomaly.experiment.controller.requests.RequestSender;
 import anomaly.experiment.controller.requests.RequestSenderJSON;
-import anomaly.experiment.controller.utils.UnirestUtils;
 import anomaly.experiment.controller.utils.Config;
+import anomaly.experiment.controller.utils.UnirestUtils;
 import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -33,22 +36,22 @@ public class Main {
         Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.INFO));
         CommandLineParser parser = new DefaultParser();
         Options o = new Options();
-        o.addOption(Option.builder("i").longOpt("inventory-file").hasArg().required().desc(
+        o.addOption(Option.builder("i").longOpt("inventory_file").hasArg().required().desc(
                 "YAML file containing anomaly experiment information.").build());
         o.addOption(Option.builder("t").hasArg().required().desc(
                 "Duration of the whole experiment. Last character determines dimension. Possible dimensions: " +
                         "s, m, h, d (seconds, minutes, hours, days).").build());
-        o.addOption(Option.builder("t-anomaly").hasArg().desc(
+        o.addOption(Option.builder("t_anomaly").hasArg().desc(
                 "Runtime of each anomaly. Last character determines dimension. Possible dimensions:" +
                         " s, m, h, d (seconds, minutes, hours, days). Default is 5 minutes").build());
-        o.addOption(Option.builder("t-load").hasArg().desc(
+        o.addOption(Option.builder("t_load").hasArg().desc(
                 "Runtime of load between anomalies. Last character determines dimension. Possible dimensions: " +
                         "s, m, h, d (seconds, minutes, hours, days). Default is 5 minutes").build());
-        o.addOption(Option.builder("t-initial-load").hasArg().desc(
+        o.addOption(Option.builder("t_initial_load").hasArg().desc(
                 "Runtime of initial load. Time at beginning of experiment, where no anomalies will be triggered. " +
                         "Last character determines dimension. Possible dimensions: " +
                         "s, m, h, d (seconds, minutes, hours, days).").build());
-        o.addOption(Option.builder("c").longOpt("collector-endpoint").hasArgs().desc("Collector endpoint" +
+        o.addOption(Option.builder("c").longOpt("collector_endpoint").hasArgs().desc("Collector endpoint" +
                 " used for documentation of injected anomalies. It is possible to define multiple endpoints.")
                 .build());
         final CommandLine flags;
@@ -152,14 +155,6 @@ public class Main {
     }
 
     /**
-     * Helper class to deserialize anomaly scenario definition YAML file.
-     */
-    static class AnomalyScenario {
-
-        public Map<String, List<AnomalyGroup>> anomalyGroups;
-        public List<Host> hosts;
-    }
-    /**
      * Convert a duration value to milliseconds.
      * @param duration
      *          Numerical value representing the duration.
@@ -193,7 +188,7 @@ public class Main {
     private static List<InjectorAgentController> getInjectorAgentController(
             AnomalyScenario scenario, RequestSenderJSON requestSenderJSON) {
         List<InjectorAgentController> injectorAgentController = new ArrayList<>();
-        for(Host h : scenario.hosts){
+        for(Host h : scenario.getHosts()){
             InjectorAgentController iac = new InjectorAgentController(h, requestSenderJSON);
             injectorAgentController.add(iac);
         }
