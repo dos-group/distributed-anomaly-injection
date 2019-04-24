@@ -31,6 +31,7 @@ public class Main {
     static { Config.initializeLogger(); }
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
+    @SuppressWarnings("Duplicates")
     public static void main(String[] args) {
 
         Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.INFO));
@@ -71,20 +72,23 @@ public class Main {
                 Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
         //Calculate end of experiment
         long stopTime = new Date().getTime() + experimentDuration;
+
         //Get duration of initial load
         long t_initialLoad = 0;
-        if(flags.hasOption("t-initial-load")) {
-            tmp = flags.getOptionValue("t-initial-load");
+        if(flags.hasOption("t_initial_load")) {
+            tmp = flags.getOptionValue("t_initial_load");
             t_initialLoad = getDurationInMS(
                     Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
         }
+
         //Get duration of each injected anomaly
         long t_anomaly = 0;
-        if(flags.hasOption("t-anomaly")) {
+        if(flags.hasOption("t_anomaly")) {
             tmp = flags.getOptionValue("t_anomaly");
             t_anomaly = getDurationInMS(Integer.parseInt(
                     tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
         }
+
         //Get time between each anomaly injection
         long t_load = 0;
         if(flags.hasOption("t_load")) {

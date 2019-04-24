@@ -31,7 +31,7 @@ anomalyGroups:
   - !!anomaly.experiment.controller.objects.AnomalyGroup
     name: stress_cpu_host
     anomalies:
-      - {id_name: stress_mem, parameters: '--cpu=4 --cpu-load={{50 60}}'}
+      - {id_name: stress_cpu, parameters: '--cpu=4 --cpu-load={{50 60}}'}
   - !!anomaly.experiment.controller.objects.AnomalyGroup
     name: stress_mem_hdd_cpu_host
     anomalies:
@@ -61,10 +61,10 @@ anomalyGroups:
 
 hosts:
   - name: localhost
-    endpoint: 0.0.0.0:7777
+    endpoint: http://localhost:7777
     anomalyGroups: *id001
 
   - name: localhost
-    endpoint: 0.0.0.0:7777
+    endpoint: http://localhost:7777
     anomalyGroups: *id002
 
