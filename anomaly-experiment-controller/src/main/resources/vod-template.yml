@@ -1,0 +1,152 @@
+
+#    public static final List HOST_ANOMALIES_BACKEND = new ArrayList() { {
+#        add(stresscpu_host); add(memleak_host);
+#        add(memstress_host); add(latency_host); add(packetloss_host);
+#        add(bandwidth_host_be); add(packet_duplicate_host);
+#    }};
+anomalyGroups_vm: &HOST_ANOMALIES_BACKEND
+  - name: stress_cpu_host_backend
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=8 --cpu-load={{90 100}}" }
+
+  - name: mem_leak_host_backend
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep={{1 20}} --memory={{50 500}} --max_memory=6000" }
+
+  - name: stress_mem_host_backend
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{5000 6000}}m" }
+
+  - name: latency_host_backend
+    anomalies:
+      - { id_name: latency, parameters: "eno1 enp2s0 lo {{50 200}}" }
+
+  - name: packet_loss_host_backend
+    anomalies:
+      - { id_name: packet_loss, parameters: "eno1 enp2s0 lo {{5 15}}" }
+
+  - name: bandwidth_host_backend
+    anomalies:
+      - { id_name: bandwidth, parameters: "eno1 enp2s0 lo {{15 30}}Mbps" }
+
+  - name: packet_duplication_host_backend
+    anomalies:
+      - { id_name: packet_duplicate, parameters: "eno1 enp2s0 lo {{5 15}}" }
+
+
+#    public static final List HOST_ANOMALIES_BALANCER = new ArrayList() { {
+#        add(stresscpu_host); add(memleak_host);
+#        add(memstress_host); add(latency_host); add(packetloss_host);
+#        add(bandwidth_host_lb); add(packet_duplicate_host);
+#    }};
+anomalyGroups_vm: &HOST_ANOMALIES_BALANCER
+  - name: stress_cpu_host_balancer
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=8 --cpu-load={{90 100}}" }
+
+  - name: mem_leak_host_balancer
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep={{1 20}} --memory={{50 500}} --max_memory=6000" }
+
+  - name: stress_mem_host_balancer
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{5000 6000}}m" }
+
+  - name: latency_host_balancer
+    anomalies:
+      - { id_name: latency, parameters: "eno1 enp2s0 lo {{50 200}}" }
+
+  - name: packet_loss_host_balancer
+    anomalies:
+      - { id_name: packet_loss, parameters: "eno1 enp2s0 lo {{5 15}}" }
+
+  - name: bandwidth_host_balancer
+    anomalies:
+      - { id_name: bandwidth, parameters: "eno1 enp2s0 lo {{120 190}}Mbps" }
+
+  - name: packet_duplication_host_balancer
+    anomalies:
+      - { id_name: packet_duplicate, parameters: "eno1 enp2s0 lo {{5 15}}" }
+
+#    public static final List VM_ANOMALIES_BALANCER = new ArrayList() { {
+#        add(stresscpu_vm); add(memstress_vm); add(memleak_vm);
+#        add(latency_vm); add(packetloss_vm); add(bandwidth_vm_lb);
+#        add(packet_duplicate_vm);
+#    }};
+anomalyGroups_vm: &VM_ANOMALIES_BALANCER
+  - name: stress_cpu_vm_balancer
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=2 --cpu-load={{90 100}}" }
+
+  - name: stress_mem_vm_balancer
+      anomalies:
+        - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 1000}}m" }
+
+  - name: mem_leak_vm_balancer
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep={{1 20}} --memory={{20 100}} --max_memory=1300" }
+
+  - name: stress_mem_vm_balancer
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 1000}}m" }
+
+  - name: latency_vm_balancer
+    anomalies:
+      - { id_name: latency, parameters: "ens3 lo {{50 200}}" }
+
+  - name: packet_loss_vm_balancer
+    anomalies:
+      - { id_name: packet_loss, parameters: "ens3 lo {{5 15}}" }
+
+  - name: bandwidth_vm_balancer
+    anomalies:
+      - { id_name: bandwidth, parameters: "ens3 lo {{30 45}}Mbps" }
+
+  - name: packet_duplication_vm_balancer
+    anomalies:
+      - { id_name: packet_duplicate, parameters: "ens3 lo {{5 15}}" }
+
+#    public static final List VM_ANOMALIES_BACKEND = new ArrayList() { {
+#        add(stresscpu_vm); add(memstress_vm); add(memleak_vm); add(hddstress);
+#        add(latency_vm); add(packetloss_vm); add(bandwidth_vm_be); add(download);
+#        add(packet_duplicate_vm);
+#    }};
+anomalyGroups_vm: &VM_ANOMALIES_BACKEND
+  - name: stress_cpu_vm_backend
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=2 --cpu-load={{90 100}}" }
+
+  - name: stress_mem_vm_backend
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 1000}}m" }
+
+  - name: mem_leak_vm_backend
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep={{1 20}} --memory={{20 100}} --max_memory=1300" }
+
+  - name: stess_hdd_vm_backend
+    anomalies:
+      - { id_name: stress_hdd, parameters: "--hdd={{1 3}}" }
+
+  - name: latency_vm_backend
+    anomalies:
+      - { id_name: latency, parameters: "ens3 lo {{50 200}}" }
+      -
+  - name: packet_loss_vm_backend
+    anomalies:
+      - { id_name:  packet_loss, parameters: "ens3 lo {{5 15}}" }
+
+  - name: bandwidth_vm_backend
+    anomalies:
+      - { id_name: bandwidth, parameters: "ens3 lo {{12 20}}Mbps" }
+
+  - name: download_vm_backend
+    anomalies:
+      - { id_name: download, parameters: "" }
+
+  - name: packet_duplication_vm_backend
+    anomalies:
+      - { id_name:  packet_duplicate, parameters: "ens3 lo {{5 15}}" }
+
+
+# TODO HOSTS
