@@ -4,23 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>experiments</groupId>
+        <groupId>zerops</groupId>
         <artifactId>distributed-anomaly-injection</artifactId>
-        <version>0.1</version>
+        <version>0.0.1</version>
     </parent>
     <artifactId>recovery-execution-agent</artifactId>
-    <version>0.1</version>
+    <version>0.0.1</version>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -49,17 +40,7 @@
         <dependency>
             <groupId>bitflow4j</groupId>
             <artifactId>bitflow4j</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>bitflow4j</groupId>
-            <artifactId>bitflow4j-algorithms</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>bitflow4j</groupId>
-            <artifactId>bitflow4j-anomaly-detector</artifactId>
-            <version>0.1</version>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 </project>
