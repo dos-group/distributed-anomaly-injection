@@ -1,9 +1,3 @@
-
-#    public static final List HOST_ANOMALIES_BACKEND = new ArrayList() { {
-#        add(stresscpu_host); add(memleak_host);
-#        add(memstress_host); add(latency_host); add(packetloss_host);
-#        add(bandwidth_host_be); add(packet_duplicate_host);
-#    }};
 anomalyGroups_vm: &HOST_ANOMALIES_BACKEND
   - name: stress_cpu_host_backend
     anomalies:
@@ -33,12 +27,6 @@ anomalyGroups_vm: &HOST_ANOMALIES_BACKEND
     anomalies:
       - { id_name: packet_duplicate, parameters: "eno1 enp2s0 lo {{5 15}}" }
 
-
-#    public static final List HOST_ANOMALIES_BALANCER = new ArrayList() { {
-#        add(stresscpu_host); add(memleak_host);
-#        add(memstress_host); add(latency_host); add(packetloss_host);
-#        add(bandwidth_host_lb); add(packet_duplicate_host);
-#    }};
 anomalyGroups_vm: &HOST_ANOMALIES_BALANCER
   - name: stress_cpu_host_balancer
     anomalies:
@@ -68,11 +56,6 @@ anomalyGroups_vm: &HOST_ANOMALIES_BALANCER
     anomalies:
       - { id_name: packet_duplicate, parameters: "eno1 enp2s0 lo {{5 15}}" }
 
-#    public static final List VM_ANOMALIES_BALANCER = new ArrayList() { {
-#        add(stresscpu_vm); add(memstress_vm); add(memleak_vm);
-#        add(latency_vm); add(packetloss_vm); add(bandwidth_vm_lb);
-#        add(packet_duplicate_vm);
-#    }};
 anomalyGroups_vm: &VM_ANOMALIES_BALANCER
   - name: stress_cpu_vm_balancer
     anomalies:
@@ -106,11 +89,6 @@ anomalyGroups_vm: &VM_ANOMALIES_BALANCER
     anomalies:
       - { id_name: packet_duplicate, parameters: "ens3 lo {{5 15}}" }
 
-#    public static final List VM_ANOMALIES_BACKEND = new ArrayList() { {
-#        add(stresscpu_vm); add(memstress_vm); add(memleak_vm); add(hddstress);
-#        add(latency_vm); add(packetloss_vm); add(bandwidth_vm_be); add(download);
-#        add(packet_duplicate_vm);
-#    }};
 anomalyGroups_vm: &VM_ANOMALIES_BACKEND
   - name: stress_cpu_vm_backend
     anomalies:
@@ -149,4 +127,3 @@ anomalyGroups_vm: &VM_ANOMALIES_BACKEND
       - { id_name:  packet_duplicate, parameters: "ens3 lo {{5 15}}" }
 
 
-# TODO HOSTS

@@ -1,36 +1,4 @@
 
-
-//    //####CPU_MEM_HDD_STRESS_HOST###
-//    private static final Map<String, Parameters> cpu_mem_hdd_stress_host_p;
-//    static
-//    {
-//        cpu_mem_hdd_stress_host_p = new HashMap<>();
-//        cpu_mem_hdd_stress_host_p.put("stress_cpu", new Parameters("--cpu=8 --cpu-load=60"));
-//        cpu_mem_hdd_stress_host_p.put("stress_mem", new Parameters("--vm=1 --vm-bytes={{2000 2500}}m"));
-//        cpu_mem_hdd_stress_host_p.put("stress_hdd", new Parameters("--hdd=1"));
-//    }
-//    public static final Anomaly cpu_mem_hdd_stress_host = new Anomaly(
-//            idSetCPUMem,"cpu_mem_hdd_stress_host", cpu_mem_hdd_stress_host_p, false);
-//
-//    //####CPU_MEM_HDD_STRESS_HOST###
-//    private static final Map<String, Parameters> cpu_mem_hdd_stress_vm_p;
-//    static
-//    {
-//        cpu_mem_hdd_stress_vm_p = new HashMap<>();
-//        cpu_mem_hdd_stress_vm_p.put("stress_cpu", new Parameters("--cpu=2 --cpu-load=60"));
-//        cpu_mem_hdd_stress_vm_p.put("stress_mem", new Parameters("--vm=1 --vm-bytes={{300 350}}m"));
-//        cpu_mem_hdd_stress_vm_p.put("stress_hdd", new Parameters("--hdd=1"));
-//    }
-//    public static final Anomaly cpu_mem_hdd_stress_vm = new Anomaly(
-//            idSetCPUMem,"cpu_mem_hdd_stress_vm", cpu_mem_hdd_stress_vm_p, false);
-//
-//
-#    public static final List HOST_ANOMALIES = new ArrayList() { {
-#        add(stresscpu_host); add(hddstress); add(hddstress_high);
-#        add(memleak_host_fast); add(memleak_host_slow); add(memstress_host);
-#        add(packetloss_host); add(download); add(packet_duplicate_host);
-#        add(cpu_stress_mem_stress_host); add(cpu_mem_hdd_stress_host);
-#    }};
 anomalyGroups_vm: &HOST_ANOMALIES
   - name: stress_cpu_host
     anomalies:
@@ -79,13 +47,6 @@ anomalyGroups_vm: &HOST_ANOMALIES
       - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{2000 2500}}m"}
       - { id_name: stress_hdd,  parameters: "--hdd=1" }
 
-
-#    public static final List VM_ANOMALIES = new ArrayList() { {
-#        add(stresscpu_vm); add(memstress_vm); add(memleak_vm_slow); add(memleak_vm_fast);
-#        add(hddstress); add(hddstress_high); add(packetloss_vm); add(download);
-#        add(packet_duplicate_vm); add(cpu_stress_mem_stress_vm); add(cpu_mem_hdd_stress_vm);
-#   }};
-
 anomalyGroups_vm: &VM_ANOMALIES
   - name: stress_cpu_vm
     anomalies:
@@ -133,8 +94,4 @@ anomalyGroups_vm: &VM_ANOMALIES
       - { id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=60" }
       - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{300 350}}m" }
       - { id_name: stress_hdd, parameters: "--hdd=1" }
-
-# TODO HOSTS
-
-
 
