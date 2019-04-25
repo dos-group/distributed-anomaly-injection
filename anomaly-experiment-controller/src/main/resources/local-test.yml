@@ -23,53 +23,48 @@
 # Note that anomaly params are supporting double curly braces of the form {{min max}}.
 # Thereby a uniformly distributed random value will be inserted that lies between min and max.
 
+#Note that the lines "- !!anomaly.experiment.controller.objects.AnomalyGroup" are mandatory in for the
+#parser to restore the anomaly group object structure.
+
 anomalyGroups:
-  anomalyGroups_host: &id001
-    - name: stress_cpu_host
-      anomalies:
-        - id_name: stress_cpu
-          parameters: "--cpu=4 --cpu-load={{50 60}}"
+  groups_host: &id001
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: stress_cpu_host
+    anomalies:
+      - {id_name: stress_cpu, parameters: '--cpu=4 --cpu-load={{50 60}}'}
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: stress_mem_hdd_cpu_host
+    anomalies:
+      - {id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{1000 2000}}m"}
+      - {id_name: stress_hdd, parameters: "--hdd=1"}
+      - {id_name: stress_cpu, parameters: "--cpu=4 --cpu-load=40"}
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: mem_leak_host
+    anomalies:
+      - {id_name: mem_leak, parameters: '--sleep={{1 20}} --memory={{50 500}} --max_memory=2000'}
 
-    - name: stress_mem_hdd_cpu_host
-      anomalies:
-        - id_name: stress_mem
-          parameters: "--vm=1 --vm-bytes={{1000 2000}}m"
-        - id_name: stress_hdd
-          parameters: "--hdd=1"
-        - id_name: stress_cpu
-          parameters: "--cpu=4 --cpu-load=40"
-
-    - name: mem_leak_host
-      anomalies:
-        - id_name: mem_leak
-          parameters: "--sleep={{1 20}} --memory={{50 500}} --max_memory=2000"
-
-  anomalyGroups_vm: &id002
-    - name: stress_cpu_vm
-      anomalies:
-        - id_name: stress_cpu
-          parameters: "--cpu=2 --cpu-load={{40 60}}"
-
-    - name: stress_hdd_vm
-      anomalies:
-        - id_name: stress_hdd
-          parameters: "--hdd=1"
-
-    - name: stress_mem_hdd_cpu_vm
-      anomalies:
-        - id_name: stress_mem
-          parameters: "--vm=1 --vm-bytes={{500 600}}m"
-        - id_name: stress_hdd
-          parameters: "--hdd=1"
-        - id_name: stress_cpu
-          parameters: "--cpu=2 --cpu-load=40"
+  groups_vm: &id002
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: stress_cpu_vm
+    anomalies:
+      - {id_name: stress_cpu, parameters: '--cpu=2 --cpu-load={{40 60}}'}
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: stress_hdd_vm
+    anomalies:
+      - {id_name: stress_hdd, parameters: '--hdd=1'}
+  - !!anomaly.experiment.controller.objects.AnomalyGroup
+    name: stress_mem_hdd_cpu_vm
+    anomalies:
+      - {id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 600}}m"}
+      - {id_name: stress_hdd, parameters: "--hdd=1"}
+      - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=40"}
 
 hosts:
   - name: localhost
-    endpoint: 0.0.0.0:7777
+    endpoint: http://localhost:7777
     anomalyGroups: *id001
 
   - name: localhost
-    endpoint: 0.0.0.0:7777
+    endpoint: http://localhost:7777
     anomalyGroups: *id002
 

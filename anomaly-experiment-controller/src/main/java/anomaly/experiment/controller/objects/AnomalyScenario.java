@@ -1,38 +1,36 @@
 package anomaly.experiment.controller.objects;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by alex on 21.02.19.
- * Helper class to deserialize anomaly scenario definition YAML file.
+ * Created by alex on 12.04.19.
  */
 public class AnomalyScenario {
 
-    private Map<String, AnomalyGroup> anomalyGroups;
-    //List<Host> hosts;
-
-    public AnomalyScenario(Map<String, AnomalyGroup> anomalyGroups) {
-        this.anomalyGroups = anomalyGroups;
-        //  this.hosts = hosts;
-    }
+    private Map<String, List<AnomalyGroup>> anomalyGroups;
+    private List<Host> hosts;
 
     public AnomalyScenario() {
-        this(null);
     }
 
-    public Map<String, AnomalyGroup> getAnomalyGroups() {
+    public AnomalyScenario(List<Host> hosts) {
+        this.hosts = hosts;
+    }
+
+    public List<Host> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(List<Host> hosts) {
+        this.hosts = hosts;
+    }
+
+    public Map<String, List<AnomalyGroup>> getAnomalyGroups() {
         return anomalyGroups;
     }
 
-    public void setAnomalyGroups(Map<String, AnomalyGroup> anomalyGroups) {
+    public void setAnomalyGroups(Map<String, List<AnomalyGroup>> anomalyGroups) {
         this.anomalyGroups = anomalyGroups;
     }
-
-//        public List<Host> getHosts() {
-//            return hosts;
-//        }
-//
-//        public void setHosts(List<Host> hosts) {
-//            this.hosts = hosts;
-//        }
 }

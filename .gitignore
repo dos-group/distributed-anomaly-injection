@@ -3,5 +3,4 @@
 .cproject
 .project
 target/
-
-
+*.log.*

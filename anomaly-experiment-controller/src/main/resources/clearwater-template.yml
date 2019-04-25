@@ -1,0 +1,97 @@
+
+anomalyGroups_vm: &HOST_ANOMALIES
+  - name: stress_cpu_host
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=8 --cpu-load={{90 100}}" }
+
+  - name: stess_hdd_host
+    anomalies:
+      - { id_name: stress_hdd,  parameters: "--hdd=1" }
+
+  - name: stess_hdd_host_high
+    anomalies:
+      - { id_name: stress_hdd, parameters: "--hdd=3" }
+
+  - name: mem_leak_host_fast
+      anomalies:
+      - { id_name: mem_leak, parameters: "--sleep=1 --memory={{30 35}} --max_memory=4000" }
+
+  - name: mem_leak_host_slow
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep=1 --memory={{12 14}} --max_memory=4000" }
+
+  - name: stress_mem_host
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{3000 3500}}m" }
+
+  - name: packet_loss_host
+    anomalies:
+      - { id_name:  packet_loss, parameters: "eno1 enp2s0 {{3 6}}" }
+
+  - name: download_host
+    anomalies:
+      - { id_name: download, parameters: "" }
+
+  - name: packet_duplication_host
+    anomalies:
+      - { id_name:  packet_duplicate, parameters: "eno1 enp2s0 {{3 6}}" }
+
+  - name: cpu_stress_mem_stress_host
+    anomalies:
+      - { id_name: stress-cpu, parameters: "--cpu=8 --cpu-load=60" }
+      - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{2000 2500}}m"}
+
+  - name: cpu_mem_hdd_stress_host
+    anomalies:
+      - { id_name: stress-cpu, parameters: "--cpu=8 --cpu-load=60" }
+      - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{2000 2500}}m"}
+      - { id_name: stress_hdd,  parameters: "--hdd=1" }
+
+anomalyGroups_vm: &VM_ANOMALIES
+  - name: stress_cpu_vm
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=2 --cpu-load={{90 100}}" }
+
+  - name: stress_mem_vm
+    anomalies:
+      - { id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 700}}m" }
+
+  - name: mem_leak_vm_slow
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep=1 --memory={{3 5}} --max_memory=1000" }
+
+  - name: mem_leak_vm_fast
+    anomalies:
+      - { id_name: mem_leak, parameters: "--sleep=1 --memory={{9 11}} --max_memory=1000" }
+
+  - name: stess_hdd_vm
+    anomalies:
+      - { id_name: stress_hdd, parameters: "--hdd=1" }
+
+  - name: stess_hdd_vm_high
+    anomalies:
+      - { id_name: stress_hdd, parameters: "--hdd=3" }
+
+  - name: packet_loss_vm
+    anomalies:
+      - { id_name: packet_loss, parameters: "ens3 {{3 6}}"}
+
+  - name: download_vm
+    anomalies:
+      - { id_name: download, parameters: ""}
+
+  - name: packet_duplication_vm
+    anomalies:
+      - { id_name:  packet_duplicate, parameters: "ens3 {{3 6}}" }
+
+  - name: cpu_stress_mem_stress_vm
+    anomalies:
+      - { id_name: stress-cpu, parameters: "--cpu=2 --cpu-load=60" }
+      - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{300 400}}m" }
+
+  - name: cpu_mem_hdd_stress_vm
+    anomalies:
+      - { id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=60" }
+      - { id_name: stress-mem, parameters: "--vm=1 --vm-bytes={{300 350}}m" }
+      - { id_name: stress_hdd, parameters: "--hdd=1" }
+

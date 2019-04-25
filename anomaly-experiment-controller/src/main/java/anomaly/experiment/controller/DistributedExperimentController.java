@@ -20,6 +20,8 @@ public class DistributedExperimentController {
     private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private static final String ANOMALY_TAG_KEY = "target";
+    private static final String RCA_TAG_KEY = "RCA";
+
     private static final String CLS_KEY = "cls";
     private static final String DEFAULT_CLS_VALUE = "load";
 
@@ -38,14 +40,15 @@ public class DistributedExperimentController {
 
     private Injector anomalyInjector;
 
-    public interface Injector{
+    public interface Injector {
         void injectNextAnomaly(AnomalyGroup anomalyGroup, int backupRevertTime);
+
         AnomalyGroup getNextAnomaly();
     }
 
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
                                            List<CollectorAgentController> collectorAgentController,
-                                           Injector anomalyInjector){
+                                           Injector anomalyInjector) {
         this.injectorAgentController = injectorAgentController;
         this.collectorAgentController = collectorAgentController;
         this.anomalyInjector = anomalyInjector;
@@ -54,7 +57,7 @@ public class DistributedExperimentController {
     }
 
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
-                                           List<CollectorAgentController> collectorAgentController){
+                                           List<CollectorAgentController> collectorAgentController) {
         this(injectorAgentController, collectorAgentController, null);
         this.anomalyInjector = new DistributedExperimentController.RoundRobinInjector();
     }
@@ -75,11 +78,11 @@ public class DistributedExperimentController {
         this.anomalyInjector = anomalyInjector;
     }
 
-    public void startExperiment(long endTime){
+    public void startExperiment(long endTime) {
         this.startExperiment(endTime, 0);
     }
 
-    public void startExperiment(long endTime, long initialDelay){
+    public void startExperiment(long endTime, long initialDelay) {
         logger.log(Level.INFO, "Starting experiment. Expected end of experiment: " +
                 DATE_TIME_FORMAT.format(new Date(endTime)));
 
@@ -94,7 +97,7 @@ public class DistributedExperimentController {
         //Start file output at collectors
         this.startFileOutputAtCollectors();
 
-        if(injectorAgentController.size() > 0) {
+        if (injectorAgentController.size() > 0) {
             try {
                 //Initially delay execution of anomaly simulations
                 if (initialDelay > 0) {
@@ -105,45 +108,46 @@ public class DistributedExperimentController {
                 this.runExperiment(endTime);
             } catch (InterruptedException ignored) {
             }
-        } else{
+        } else {
             //Run idle loop if no anomaly simulations should be run
             try {
                 this.runIdle(endTime);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
 
         //Shutdown experiment
         this.shutdown();
     }
 
-    public synchronized void shutdown(){
+    public synchronized void shutdown() {
         //Set shutdown flag
         this.shutdown = true;
         //If there is some anomaly running --> stop it
-        if(currentInjectorAgentController != null){
-            if(currentInjectorAgentController.getCurrentAnomaly() != null) {
+        if (currentInjectorAgentController != null) {
+            if (currentInjectorAgentController.getCurrentAnomaly() != null) {
                 AnomalyGroup a = currentInjectorAgentController.getCurrentAnomaly();
                 currentInjectorAgentController.stopAnomaly(a);
             }
         }
         //Delete all tags at collectors
-        this.unsetTags(new HashSet<>(Arrays.asList(CLS_KEY, ANOMALY_TAG_KEY)));
+        this.unsetTags(new HashSet<>(Arrays.asList(CLS_KEY, ANOMALY_TAG_KEY, RCA_TAG_KEY)));
         //Stop data collection at collector targets
         stopFileOutputAtCollectors();
     }
 
     private void logTargets(String msg, List<? extends Object> injectorAgentController) {
-        for(Object o : injectorAgentController)
+        for (Object o : injectorAgentController)
             logger.log(Level.INFO, msg + ": " + o.toString());
     }
 
     private void startFileOutputAtCollectors() {
-        for(CollectorAgentController cac : collectorAgentController)
+        for (CollectorAgentController cac : collectorAgentController)
             cac.startFileOutput();
     }
 
     private void stopFileOutputAtCollectors() {
-        for(CollectorAgentController cac : collectorAgentController)
+        for (CollectorAgentController cac : collectorAgentController)
             cac.stopFileOutput();
     }
 
@@ -151,23 +155,21 @@ public class DistributedExperimentController {
         //Auxiliary variables
         Set<String> clsTagKeys = new HashSet<>(Arrays.asList(CLS_KEY));
         Set<String> anomalyTagKeys = new HashSet<>(Arrays.asList(ANOMALY_TAG_KEY));
-        Set<String> tagCombination;
-        int anomalyExecutionCounter = 0;
+        Set<String> rcaTagKeys = new HashSet<>(Arrays.asList(RCA_TAG_KEY));
 
         //Loop as long as the end time is not reached
-        while(new Date().getTime() < stopTime && !shutdown) {
+        while (new Date().getTime() < stopTime && !shutdown) {
             long anomalyRuntime = anomalyTimeSelector.getTime();
             AnomalyGroup anomalyGroup = anomalyInjector.getNextAnomaly();
-            if(anomalyGroup != null) {
-                anomalyExecutionCounter++;
+            if (anomalyGroup != null) {
                 this.unsetTags(clsTagKeys);
-                this.setAnomalyTags(anomalyGroup, currentInjectorAgentController.getHost().getName());
-                anomalyInjector.injectNextAnomaly(anomalyGroup, (int)(anomalyRuntime + AUTO_RECOVERY_DELAY));
+                this.setAnomalyAndRcaTags(anomalyGroup, currentInjectorAgentController.getHost().getName());
+                anomalyInjector.injectNextAnomaly(anomalyGroup, (int) (anomalyRuntime + AUTO_RECOVERY_DELAY));
                 Thread.sleep(anomalyRuntime);
                 currentInjectorAgentController.stopAnomaly(anomalyGroup);
                 this.currentInjectorAgentController = null;
-                tagCombination = new HashSet<>(anomalyTagKeys);
-                this.unsetTags(tagCombination);
+                ;
+                this.unsetTags(new HashSet<>(Arrays.asList(ANOMALY_TAG_KEY, RCA_TAG_KEY)));
                 this.setClsTags();
                 Thread.sleep(loadTimeSelector.getTime());
             }
@@ -175,7 +177,7 @@ public class DistributedExperimentController {
     }
 
     private void runIdle(long stopTime) throws InterruptedException {
-        while(new Date().getTime() < stopTime && !shutdown)
+        while (new Date().getTime() < stopTime && !shutdown)
             Thread.sleep(IDLE_TIME_VALUE);
     }
 
@@ -191,6 +193,22 @@ public class DistributedExperimentController {
             cac.setTags(tags);
     }
 
+    private void setRcaTags(AnomalyGroup anomalyGroup, String InjectorTargetName) {
+        Map<String, String> tags = new HashMap<>();
+        tags.put(RCA_TAG_KEY, InjectorTargetName);
+        for (CollectorAgentController cac : collectorAgentController)
+            cac.setTags(tags);
+    }
+
+    /* fewer requests compared to use setrcatags and setanomaly tags */
+    private void setAnomalyAndRcaTags(AnomalyGroup anomalyGroup, String InjectorTargetName) {
+        Map<String, String> tags = new HashMap<>();
+        tags.put(RCA_TAG_KEY, InjectorTargetName);
+        tags.put(ANOMALY_TAG_KEY, InjectorTargetName + "|" + anomalyGroup.getName());
+        for (CollectorAgentController cac : collectorAgentController)
+            cac.setTags(tags);
+    }
+
     private void setClsTags() {
         Map<String, String> tags = new HashMap<>();
         tags.put(CLS_KEY, DEFAULT_CLS_VALUE);
@@ -198,81 +216,81 @@ public class DistributedExperimentController {
             cac.setTags(tags);
     }
 
-    public interface TimeSelector{
+    public interface TimeSelector {
         long getTime();
     }
 
-    public class ConstantTimeSelector implements TimeSelector{
+    public class ConstantTimeSelector implements TimeSelector {
         private long timeValue;
 
-        public ConstantTimeSelector(long timeValue){
+        public ConstantTimeSelector(long timeValue) {
             this.timeValue = timeValue;
         }
 
         @Override
-        public long getTime(){
+        public long getTime() {
             return timeValue;
         }
     }
 
-    public class EqualDestributionTimeSelector implements TimeSelector{
+    public class EqualDestributionTimeSelector implements TimeSelector {
         private long minTimeValue;
         private long maxTimeValue;
 
-        public EqualDestributionTimeSelector(long minTimeValue, long maxTimeValue){
+        public EqualDestributionTimeSelector(long minTimeValue, long maxTimeValue) {
             this.minTimeValue = minTimeValue;
             this.maxTimeValue = maxTimeValue;
         }
 
         @Override
-        public long getTime(){
+        public long getTime() {
             return ThreadLocalRandom.current().nextLong(minTimeValue, maxTimeValue);
         }
     }
 
-    public class NormalDestributionTimeSelector implements TimeSelector{
+    public class NormalDestributionTimeSelector implements TimeSelector {
         private final Random random = new Random();
         private long mean;
         private long stdDeviation;
 
-        public NormalDestributionTimeSelector(long mean, long stdDeviation){
+        public NormalDestributionTimeSelector(long mean, long stdDeviation) {
             this.mean = mean;
             this.stdDeviation = stdDeviation;
         }
 
         @Override
-        public long getTime(){
+        public long getTime() {
             return Math.round(random.nextGaussian() * mean + stdDeviation);
         }
     }
 
-    public class RoundRobinInjector implements Injector{
+    public class RoundRobinInjector implements Injector {
         private int injectorIndex;
         private int anomalyInjectionCounter;
 
 
-        public RoundRobinInjector(){
+        public RoundRobinInjector() {
             injectorIndex = 0;
         }
 
         @Override
-        public AnomalyGroup getNextAnomaly(){
+        public AnomalyGroup getNextAnomaly() {
             //Run anomalies on targets one after another
-            if(injectorIndex < injectorAgentController.size()) {
+            if (injectorIndex < injectorAgentController.size()) {
                 InjectorAgentController injectorTarget = injectorAgentController.get(injectorIndex++);
                 AnomalyGroup a = injectorTarget.getNextAnomaly();
                 if (a != null) {
                     anomalyInjectionCounter++;
                     currentInjectorAgentController = injectorTarget;
                     return a;
-                }else{
+                } else {
                     getNextAnomaly();
                 }
-            }else{
+            } else {
                 injectorIndex = 0;
                 //After EACH injector target executed ALL of its anomalies, all injector target anomalies
                 //are reset and can be started in the next round.
-                if(anomalyInjectionCounter == 0){
+                if (anomalyInjectionCounter == 0) {
                     for (InjectorAgentController iac : injectorAgentController) {
                         iac.resetNextAnomalyIndex();
                     }
@@ -288,39 +306,4 @@ public class DistributedExperimentController {
             currentInjectorAgentController.startNextAnomaly(anomalyGroup, backupRevertTime);
         }
     }
-
-//    public class ServiceGroupRoundRobinInjector implements Injector{
-//        private int currentGroupIndex;
-//        private List<String> groups;
-//
-//        public ServiceGroupRoundRobinInjector(){
-//            groups = new ArrayList<>();
-//            groups.addAll(injectorTargets.keySet());
-//            currentGroupIndex = 0;
-//        }
-//
-//        @Override
-//        public Anomaly getNextAnomaly() {
-//            String group = groups.get(currentGroupIndex % groups.size());
-//            currentGroupIndex++;
-//            InjectorTarget injectorTarget = (InjectorTarget) injectorTargets.get(group).get(
-//                    ThreadLocalRandom.current().nextInt(0, injectorTargets.get(group).size()));
-//
-//            Anomaly a = injectorTarget.getNextAnomaly();
-//            if(a == null){
-//                injectorTarget.resetNextAnomalyIndex();
-//                a = injectorTarget.getNextAnomaly();
-//            }
-//            for(Target t : injectorTargets.get(group))
-//                ((InjectorTarget) t).setAnomalyIndex(injectorTarget.getAnomalyIndex());
-//
-//            currentInjectorTarget = injectorTarget;
-//            return a;
-//        }
-//
-//        @Override
-//        public void injectNextAnomaly(Anomaly a, long backupRevertTime) {
-//            currentInjectorTarget.startNextAnomaly(a, backupRevertTime);
-//        }
-//    }
 }
