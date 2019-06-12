@@ -28,11 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-//TODO: CL argument to finish after certain amount of each anomaly was injected on each host
-//TODO: Write script to restart VMs, rerun ansible playbook, set load, enable file output everywhere
-
-//TODO: Fix collector. Soemthing with the tags format.
-
 /**
  * Created by alex on 20.02.19.
  */
@@ -75,6 +70,10 @@ public class Main {
                 " which will be executed after each anomaly injection.").build());
         o.addOption(Option.builder("suppress_anomaly_reverting").desc("If set, the injected anomalies won't" +
                 " be reverted after t_anomaly expired.").build());
+        o.addOption(Option.builder("auto_recovery_delay").hasArgs().desc("(t_anomaly + auto_recovery_delay) is " +
+                "the time after which the anomaly should be auto-reverted by the injector agent itself. " +
+                "Last character determines dimension. Possible dimensions: s, m, h, d (seconds, " +
+                "minutes, hours, days).").build());
         o.addOption(Option.builder("run_mock_mode").desc("If set, no real requests will be sent. " +
                 " Can be used to test experiment in dry run to see if it behaves as intended.").build());
         final CommandLine flags;
@@ -151,6 +150,14 @@ public class Main {
             }
         }
 
+        //Get duration of initial load
+        long auto_recovery_delay = 0;
+        if (flags.hasOption("auto_recovery_delay")) {
+            String tmp = flags.getOptionValue("auto_recovery_delay");
+            auto_recovery_delay = getDurationInMS(
+                    Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
+        }
+
         boolean suppressAnomalyReverting = flags.hasOption("suppress_anomaly_reverting");
         boolean run_mock_mode = flags.hasOption("run_mock_mode");
 
@@ -205,6 +212,7 @@ public class Main {
         controller.setLoadTimeSelector(timeSelector_load);
         controller.setPathPostInjectionScript(pathPostInjectionScript);
         controller.setSuppressAnomalyReverting(suppressAnomalyReverting);
+        controller.setAutoRecoveryDelay(auto_recovery_delay);
 
         //Set shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

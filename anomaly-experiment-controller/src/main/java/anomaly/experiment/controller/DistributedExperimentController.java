@@ -31,8 +31,7 @@ public class DistributedExperimentController {
     private static final long DEFAULT_TIME_VALUE = 5 * 60 * 1000;
     private static final long IDLE_TIME_VALUE = 10 * 1000;
 
-    //TODO: Make parameter
-    private static final int AUTO_RECOVERY_DELAY = 5000 * 30;
+    private static final int DEFAULT_AUTO_RECOVERY_DELAY = 5000 * 30;
 
     private List<InjectorAgentController> injectorAgentController;
     private List<CollectorAgentController> collectorAgentController;
@@ -43,6 +42,7 @@ public class DistributedExperimentController {
     private InjectorAgentController currentInjectorAgentController = null;
     private boolean shutdown = false;
     private boolean suppressAnomalyReverting;
+    private long autoRecoveryDelay;
 
     private Injector anomalyInjector;
 
@@ -51,7 +51,7 @@ public class DistributedExperimentController {
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
                                            List<CollectorAgentController> collectorAgentController,
                                            Injector anomalyInjector, String pathPostInjectionScriptpathPostInjectionScript,
-                                           boolean suppressAnomalyReverting) {
+                                           boolean suppressAnomalyReverting, long autoRecoveryDelay) {
         this.injectorAgentController = injectorAgentController;
         this.collectorAgentController = collectorAgentController;
         this.anomalyInjector = anomalyInjector;
@@ -59,13 +59,22 @@ public class DistributedExperimentController {
         this.loadTimeSelector = new DistributedExperimentController.ConstantTimeSelector(DEFAULT_TIME_VALUE);
         this.pathPostInjectionScript = pathPostInjectionScriptpathPostInjectionScript;
         this.suppressAnomalyReverting = suppressAnomalyReverting;
+        this.autoRecoveryDelay = autoRecoveryDelay;
     }
 
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
                                            List<CollectorAgentController> collectorAgentController) {
         this(injectorAgentController, collectorAgentController,
-                null, null, true);
+                null, null, true, DEFAULT_AUTO_RECOVERY_DELAY);
         this.anomalyInjector = new DistributedExperimentController.RoundRobinInjector();
+    }
+
+    public long getAutoRecoveryDelay() {
+        return autoRecoveryDelay;
+    }
+
+    public void setAutoRecoveryDelay(long autoRecoveryDelay) {
+        this.autoRecoveryDelay = autoRecoveryDelay;
     }
 
     public void setAnomalyTimeSelector(TimeSelector anomalyTimeSelector) {
@@ -218,7 +227,7 @@ public class DistributedExperimentController {
 
         this.unsetTags(clsTagKeys);
         this.setAnomalyAndRcaTags(anomalyGroup, currentInjectorAgentController.getHost().getName());
-        anomalyInjector.injectNextAnomaly(anomalyGroup, (int) (anomalyRuntime + AUTO_RECOVERY_DELAY));
+        anomalyInjector.injectNextAnomaly(anomalyGroup, (int) (anomalyRuntime + autoRecoveryDelay));
         Thread.sleep(anomalyRuntime);
         if (!this.suppressAnomalyReverting)
             currentInjectorAgentController.stopAnomaly(anomalyGroup);
