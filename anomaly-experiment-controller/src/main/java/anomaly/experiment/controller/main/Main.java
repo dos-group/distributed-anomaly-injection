@@ -151,7 +151,7 @@ public class Main {
         }
 
         //Get duration of initial load
-        long auto_recovery_delay = 0;
+        long auto_recovery_delay = -1;
         if (flags.hasOption("auto_recovery_delay")) {
             String tmp = flags.getOptionValue("auto_recovery_delay");
             auto_recovery_delay = getDurationInMS(
@@ -212,7 +212,8 @@ public class Main {
         controller.setLoadTimeSelector(timeSelector_load);
         controller.setPathPostInjectionScript(pathPostInjectionScript);
         controller.setSuppressAnomalyReverting(suppressAnomalyReverting);
-        controller.setAutoRecoveryDelay(auto_recovery_delay);
+        if(auto_recovery_delay > 0)
+            controller.setAutoRecoveryDelay(auto_recovery_delay);
 
         //Set shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
