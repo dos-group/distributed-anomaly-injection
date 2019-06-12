@@ -24,54 +24,18 @@
 # Thereby a uniformly distributed random value will be inserted that lies between min and max.
 
 anomalyGroups:
-  groups_host: &id001
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-      name: stress_cpu_host
-      anomalies:
-        - {id_name: stress_cpu, parameters: "--cpu=8 --cpu-load={{90 100}}"}
-
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-    name: download_host
-    anomalies:
-      - {id_name: download, parameters: ""}
-
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-    name: stress_mem_hdd_cpu_host
-    anomalies:
-      - {id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{5000 6000}}m"}
-      - {id_name: stress_hdd, parameters: "--hdd={{1 3}}"}
-      - {id_name: stress_cpu, parameters: "--cpu=8 --cpu-load=40"}
-
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-    name: mem_leak_host
-    anomalies:
-      - {id_name: mem_leak, parameters: "--sleep={{1 20}} --memory={{50 500}} --max_memory=6000"}
-
   groups_vm: &id002
   - !!anomaly.experiment.controller.objects.AnomalyGroup
-      name: stress_cpu_vm
+      name: mem_leak
       anomalies:
-        - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load={{90 100}}"}
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-      name: stress_hdd_vm
-      anomalies:
-        - {id_name: stress_hdd, parameters: '--hdd={{1 3}}'}
-  - !!anomaly.experiment.controller.objects.AnomalyGroup
-     name: stress_mem_hdd_cpu_vm
-     anomalies:
-       - {id_name: stress_mem, parameters: "--vm=1 --vm-bytes={{500 600}}m"}
-       - {id_name: stress_hdd, parameters: "--hdd={{1 3}}"}
-       - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=40"}
+        - {id_name: mem_leak, parameters: "--sleep=1 --memory=4"}
 
 hosts:
-  - name: wally181
-    endpoint: http://130.149.249.191:7777
-    anomalyGroups: *id001
-
-  - name: wally182
-    endpoint: http://130.149.249.192:7777
-    anomalyGroups: *id001
-
-  - name: test_vm
-    endpoint: http://10.0.42.45:7777
+  - name: wally193-instance-000000ec
+    endpoint: http://10.0.42.20:7888
     anomalyGroups: *id002
+
+  - name: wally193-instance-000000ed
+    endpoint: http://10.0.42.71:7888
+    anomalyGroups: *id002
+

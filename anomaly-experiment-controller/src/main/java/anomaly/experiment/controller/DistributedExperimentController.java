@@ -3,9 +3,12 @@ package anomaly.experiment.controller;
 import anomaly.experiment.controller.objects.AnomalyGroup;
 import anomaly.experiment.controller.objects.CollectorAgentController;
 import anomaly.experiment.controller.objects.InjectorAgentController;
+import anomaly.experiment.controller.utils.CommandExecuter;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +30,9 @@ public class DistributedExperimentController {
 
     private static final long DEFAULT_TIME_VALUE = 5 * 60 * 1000;
     private static final long IDLE_TIME_VALUE = 10 * 1000;
-    private static final int AUTO_RECOVERY_DELAY = 5000;
+
+    //TODO: Make parameter
+    private static final int AUTO_RECOVERY_DELAY = 5000 * 30;
 
     private List<InjectorAgentController> injectorAgentController;
     private List<CollectorAgentController> collectorAgentController;
@@ -37,28 +42,29 @@ public class DistributedExperimentController {
 
     private InjectorAgentController currentInjectorAgentController = null;
     private boolean shutdown = false;
+    private boolean suppressAnomalyReverting;
 
     private Injector anomalyInjector;
 
-    public interface Injector {
-        void injectNextAnomaly(AnomalyGroup anomalyGroup, int backupRevertTime);
-
-        AnomalyGroup getNextAnomaly();
-    }
+    private String pathPostInjectionScript;
 
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
                                            List<CollectorAgentController> collectorAgentController,
-                                           Injector anomalyInjector) {
+                                           Injector anomalyInjector, String pathPostInjectionScriptpathPostInjectionScript,
+                                           boolean suppressAnomalyReverting) {
         this.injectorAgentController = injectorAgentController;
         this.collectorAgentController = collectorAgentController;
         this.anomalyInjector = anomalyInjector;
         this.anomalyTimeSelector = new DistributedExperimentController.ConstantTimeSelector(DEFAULT_TIME_VALUE);
         this.loadTimeSelector = new DistributedExperimentController.ConstantTimeSelector(DEFAULT_TIME_VALUE);
+        this.pathPostInjectionScript = pathPostInjectionScriptpathPostInjectionScript;
+        this.suppressAnomalyReverting = suppressAnomalyReverting;
     }
 
     public DistributedExperimentController(List<InjectorAgentController> injectorAgentController,
                                            List<CollectorAgentController> collectorAgentController) {
-        this(injectorAgentController, collectorAgentController, null);
+        this(injectorAgentController, collectorAgentController,
+                null, null, true);
         this.anomalyInjector = new DistributedExperimentController.RoundRobinInjector();
     }
 
@@ -78,11 +84,28 @@ public class DistributedExperimentController {
         this.anomalyInjector = anomalyInjector;
     }
 
-    public void startExperiment(long endTime) {
-        this.startExperiment(endTime, 0);
+    public void startExperiment(long endTime, int numberOfAnomalyInjections) throws ScriptHookUpException{
+        this.startExperiment(endTime, 0, numberOfAnomalyInjections);
     }
 
-    public void startExperiment(long endTime, long initialDelay) {
+    public String getPathPostInjectionScript() {
+        return pathPostInjectionScript;
+    }
+
+    public void setPathPostInjectionScript(String pathPostInjectionScript) {
+        this.pathPostInjectionScript = pathPostInjectionScript;
+    }
+
+    public boolean isSuppressAnomalyReverting() {
+        return suppressAnomalyReverting;
+    }
+
+    public void setSuppressAnomalyReverting(boolean suppressAnomalyReverting) {
+        this.suppressAnomalyReverting = suppressAnomalyReverting;
+    }
+
+    public void startExperiment(long endTime, long initialDelay, int numberOfAnomalyInjections)
+            throws ScriptHookUpException{
         logger.log(Level.INFO, "Starting experiment. Expected end of experiment: " +
                 DATE_TIME_FORMAT.format(new Date(endTime)));
 
@@ -105,7 +128,10 @@ public class DistributedExperimentController {
                     Thread.sleep(initialDelay);
                 }
                 //Run anomaly injection experiment
-                this.runExperiment(endTime);
+                if(numberOfAnomalyInjections < 0)
+                    this.runExperiment(endTime);
+                else
+                    this.runExperiment(numberOfAnomalyInjections);
             } catch (InterruptedException ignored) {
             }
         } else {
@@ -136,7 +162,7 @@ public class DistributedExperimentController {
         stopFileOutputAtCollectors();
     }
 
-    private void logTargets(String msg, List<? extends Object> injectorAgentController) {
+    private void logTargets(String msg, List<?> injectorAgentController) {
         for (Object o : injectorAgentController)
             logger.log(Level.INFO, msg + ": " + o.toString());
     }
@@ -151,29 +177,73 @@ public class DistributedExperimentController {
             cac.stopFileOutput();
     }
 
-    private void runExperiment(long stopTime) throws InterruptedException {
-        //Auxiliary variables
-        Set<String> clsTagKeys = new HashSet<>(Arrays.asList(CLS_KEY));
-        Set<String> anomalyTagKeys = new HashSet<>(Arrays.asList(ANOMALY_TAG_KEY));
-        Set<String> rcaTagKeys = new HashSet<>(Arrays.asList(RCA_TAG_KEY));
-
-        //Loop as long as the end time is not reached
-        while (new Date().getTime() < stopTime && !shutdown) {
-            long anomalyRuntime = anomalyTimeSelector.getTime();
+    private void runExperiment(int numberOfInjections) throws InterruptedException, ScriptHookUpException {
+        // Loop until shutdown flag is set
+        while (!shutdown) {
             AnomalyGroup anomalyGroup = anomalyInjector.getNextAnomaly();
             if (anomalyGroup != null) {
-                this.unsetTags(clsTagKeys);
-                this.setAnomalyAndRcaTags(anomalyGroup, currentInjectorAgentController.getHost().getName());
-                anomalyInjector.injectNextAnomaly(anomalyGroup, (int) (anomalyRuntime + AUTO_RECOVERY_DELAY));
-                Thread.sleep(anomalyRuntime);
-                currentInjectorAgentController.stopAnomaly(anomalyGroup);
-                this.currentInjectorAgentController = null;
-                ;
-                this.unsetTags(new HashSet<>(Arrays.asList(ANOMALY_TAG_KEY, RCA_TAG_KEY)));
-                this.setClsTags();
-                Thread.sleep(loadTimeSelector.getTime());
+                this.runAnomalyInjection(anomalyGroup);
+            }
+            if(this.isNumberOfInjectionsReached()){
+                shutdown = true;
             }
         }
+        logger.log(Level.INFO, String.format("Experiment reached end after each anomaly was " +
+                "executed %d times on every host.", numberOfInjections));
+    }
+
+    private boolean isNumberOfInjectionsReached() {
+        boolean result = true;
+        // All injector controller must reach the max injection counter to make return value true
+        for(InjectorAgentController ic : this.injectorAgentController){
+            result = result && ic.isMaxInjectionCountReached();
+        }
+        return result;
+    }
+
+    private void runExperiment(long stopTime) throws InterruptedException, ScriptHookUpException {
+        //Loop as long as the end time is not reached
+        while (new Date().getTime() < stopTime && !shutdown) {
+            AnomalyGroup anomalyGroup = anomalyInjector.getNextAnomaly();
+            if (anomalyGroup != null) {
+                this.runAnomalyInjection(anomalyGroup);
+            }
+        }
+        logger.log(Level.INFO, "Experiment reached end after defined runtime expired.");
+    }
+
+    private void runAnomalyInjection(AnomalyGroup anomalyGroup) throws InterruptedException, ScriptHookUpException {
+        Set<String> clsTagKeys = new HashSet<>(Arrays.asList(CLS_KEY));
+        long anomalyRuntime = anomalyTimeSelector.getTime();
+
+        this.unsetTags(clsTagKeys);
+        this.setAnomalyAndRcaTags(anomalyGroup, currentInjectorAgentController.getHost().getName());
+        anomalyInjector.injectNextAnomaly(anomalyGroup, (int) (anomalyRuntime + AUTO_RECOVERY_DELAY));
+        Thread.sleep(anomalyRuntime);
+        if (!this.suppressAnomalyReverting)
+            currentInjectorAgentController.stopAnomaly(anomalyGroup);
+        this.currentInjectorAgentController = null;
+        this.unsetTags(new HashSet<>(Arrays.asList(ANOMALY_TAG_KEY, RCA_TAG_KEY)));
+        this.setClsTags();
+        if(!this.executePostInjectionScript()){
+            throw new ScriptHookUpException(String.format("Failed to execute post injection script %s.",
+                    this.pathPostInjectionScript));
+        }
+        Thread.sleep(loadTimeSelector.getTime());
+    }
+
+    private boolean executePostInjectionScript() throws InterruptedException {
+        boolean success = true;
+        if (this.pathPostInjectionScript != null && !this.pathPostInjectionScript.isEmpty()) {
+            try {
+                success = CommandExecuter.executeCommand(this.pathPostInjectionScript);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, String.format("Not able to execute post injection script: " +
+                        "%s", this.pathPostInjectionScript), e);
+                success = false;
+            }
+        }
+        return success;
     }
 
     private void runIdle(long stopTime) throws InterruptedException {
@@ -201,10 +271,10 @@ public class DistributedExperimentController {
     }
 
     /* fewer requests compared to use setrcatags and setanomaly tags */
-    private void setAnomalyAndRcaTags(AnomalyGroup anomalyGroup, String InjectorTargetName) {
+    private void setAnomalyAndRcaTags(AnomalyGroup anomalyGroup, String injectorTargetName) {
         Map<String, String> tags = new HashMap<>();
-        tags.put(RCA_TAG_KEY, InjectorTargetName);
-        tags.put(ANOMALY_TAG_KEY, InjectorTargetName + "|" + anomalyGroup.getName());
+        tags.put(RCA_TAG_KEY, injectorTargetName);
+        tags.put(ANOMALY_TAG_KEY, injectorTargetName + "|" + anomalyGroup.getName());
         for (CollectorAgentController cac : collectorAgentController)
             cac.setTags(tags);
     }
@@ -214,6 +284,11 @@ public class DistributedExperimentController {
         tags.put(CLS_KEY, DEFAULT_CLS_VALUE);
         for (CollectorAgentController cac : collectorAgentController)
             cac.setTags(tags);
+    }
+
+    public interface Injector {
+        void injectNextAnomaly(AnomalyGroup anomalyGroup, int backupRevertTime);
+        AnomalyGroup getNextAnomaly();
     }
 
     public interface TimeSelector {
@@ -267,9 +342,10 @@ public class DistributedExperimentController {
     public class RoundRobinInjector implements Injector {
         private int injectorIndex;
         private int anomalyInjectionCounter;
+        private boolean isNextAnomalyIndexReset = true;
 
 
-        public RoundRobinInjector() {
+        RoundRobinInjector() {
             injectorIndex = 0;
         }
 
@@ -304,6 +380,26 @@ public class DistributedExperimentController {
         public void injectNextAnomaly(AnomalyGroup anomalyGroup, int backupRevertTime) {
             //Run anomalies on target
             currentInjectorAgentController.startNextAnomaly(anomalyGroup, backupRevertTime);
+        }
+    }
+    public class ScriptHookUpException extends Exception{
+        public ScriptHookUpException() {
+        }
+
+        public ScriptHookUpException(String message) {
+            super(message);
+        }
+
+        public ScriptHookUpException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public ScriptHookUpException(Throwable cause) {
+            super(cause);
+        }
+
+        public ScriptHookUpException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            super(message, cause, enableSuppression, writableStackTrace);
         }
     }
 }

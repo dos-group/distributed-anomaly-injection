@@ -31,7 +31,7 @@ public class CollectorAgentController {
         checkRequestController();
         logger.log(Level.INFO, "Starting file output of collector " + host.getName() + " at " +
                 getFileOutputAPIEndpoint());
-        if(!requestController.post(this.getFileOutputAPIEndpoint()))
+        if (!requestController.post(this.getFileOutputAPIEndpoint()))
             logger.warning("Unable to start file output.");
     }
 
@@ -39,57 +39,57 @@ public class CollectorAgentController {
         checkRequestController();
         logger.log(Level.INFO, "Stopping file output of collector " + host.getName() + " at " +
                 getFileOutputAPIEndpoint());
-        if(!requestController.delete(this.getFileOutputAPIEndpoint()))
+        if (!requestController.delete(this.getFileOutputAPIEndpoint(), false))
             logger.warning("Unable to stop file output.");
     }
 
-    private String getFileOutputAPIEndpoint(){
-        return this.host.getEndpoint() + FILE_OUTPUT_PATH ;
+    private String getFileOutputAPIEndpoint() {
+        return this.host.getEndpoint() + FILE_OUTPUT_PATH;
     }
 
-    public void setTags(Map<String, String> tags){
+    public void setTags(Map<String, String> tags) {
         checkRequestController();
         logger.log(Level.INFO, "Setting tags " + mapToString(tags) +
                 " on collector " + host.getName() + " at " + getTagsAPIEndpoint());
-        if(!requestController.query(this.getTagsAPIEndpoint(), tags))
+        if (!requestController.query(this.getTagsAPIEndpoint(), tags))
             logger.warning("Unable to set tags.");
     }
 
-    private String getTagsAPIEndpoint(){
+    private String getTagsAPIEndpoint() {
         return this.host.getEndpoint() + TAGS_PATH;
     }
 
-    public void removeTags(Set<String> tagKeys){
+    public void removeTags(Set<String> tagKeys) {
         checkRequestController();
         logger.log(Level.INFO, "Removing tags " + setToString(tagKeys) +
                 " on collector " + host.getName() + " at " + getTagsAPIEndpoint());
         boolean success = true;
-        for(String tagKey : tagKeys)
-            success = success && requestController.delete(this.getTagAPIEndpoint(tagKey));
-        if(!success)
+        for (String tagKey : tagKeys)
+            success = success && requestController.delete(this.getTagAPIEndpoint(tagKey), false);
+        if (!success)
             logger.warning("Unable to reset tags.");
     }
 
-    private String getTagAPIEndpoint(String tagKey){
-        return this.host.getEndpoint() + TAG_PATH + "/" + tagKey ;
+    private String getTagAPIEndpoint(String tagKey) {
+        return this.host.getEndpoint() + TAG_PATH + "/" + tagKey;
     }
 
-    private String mapToString(Map<String, String> map){
+    private String mapToString(Map<String, String> map) {
         String result = "";
-        for(Map.Entry<String, String> entry : map.entrySet())
+        for (Map.Entry<String, String> entry : map.entrySet())
             result += "(" + entry.getKey() + "=" + entry.getValue() + ")";
         return result;
     }
 
-    private String setToString(Set<String> set){
+    private String setToString(Set<String> set) {
         String result = "";
-        for(String entry : set)
+        for (String entry : set)
             result += entry + ", ";
         return "(" + result.substring(0, result.length() - 2) + ")";
     }
 
     private void checkRequestController() throws InvalidParameterException {
-        if(requestController == null)
+        if (requestController == null)
             throw new InvalidParameterException("Request controller is undefined.");
     }
 
