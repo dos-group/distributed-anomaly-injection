@@ -5,11 +5,6 @@ from anomalies.anomaly import *
 from anomalies.anomaly_network import *
 from anomalies.anomaly_process_python import *
 
-PHYSICAL = symbolic_names["PHYS"]
-VIRTUAL = symbolic_names["VM"]
-SERVICE = symbolic_names["VNF"]
-HOST = symbolic_names["HOST"]
-
 def get_parametrized_anomalies():
     home = os.getcwd()
     parameterized = { \
@@ -65,7 +60,7 @@ def get_parametrized_anomalies():
         "stress_hdd": [ \
             ParameterizedAnomaly(ProcessAnomaly("stress_hdd", home + "/anomalies/binaries/stress-ng",
                                                 termination_routine=ClearTempDirectories("./tmp-stress-ng-hdd*")), \
-                                 HOST, "--hdd={{2 4}}"), \
+                                 PHYSICAL, "--hdd={{2 4}}"), \
             ParameterizedAnomaly(ProcessAnomaly("stress_hdd", home + "/anomalies/binaries/stress-ng",
                                                 termination_routine=ClearTempDirectories("./tmp-stress-ng-hdd*")), \
                                  VIRTUAL, "--hdd={{2 4}}"), \
@@ -75,43 +70,43 @@ def get_parametrized_anomalies():
             ],
         "download": [ \
             ParameterizedAnomaly(ProcessAnomaly("download", home + "/anomalies/scripts/download/download.sh"), \
-                                 HOST, ""), \
+                                 SERVICE, ""), \
             ParameterizedAnomaly(ProcessAnomaly("download", home + "/anomalies/scripts/download/vnf_download.sh"), \
                                  VIRTUAL, ""), \
             ],
         "latency": [
             ParameterizedAnomaly(TrafficControlAnomaly.Latency("latency"), \
-                                 HOST, "lo {{200 280}}"), \
+                                 SERVICE, "lo {{200 280}}"), \
             ParameterizedAnomaly(TrafficControlAnomaly.Latency("latency"), \
                                  VIRTUAL, "lo {{200 280}}")
         ], \
         "packet_loss": [
             ParameterizedAnomaly(TrafficControlAnomaly.PacketLoss("packet_loss"), \
-                                 HOST, "lo {{10 25}}"), \
+                                 PHYSICAL, "lo {{10 25}}"), \
             ParameterizedAnomaly(TrafficControlAnomaly.PacketLoss("packet_loss"), \
                                  VIRTUAL, "lo {{10 25}}")
         ], \
         "bandwidth": [
             ParameterizedAnomaly(TrafficControlAnomaly.Bandwidth("bandwidth"), \
-                                 HOST, "lo {{100 250}}Mbps"), \
+                                 PHYSICAL, "lo {{100 250}}Mbps"), \
             ParameterizedAnomaly(TrafficControlAnomaly.Bandwidth("bandwidth"), \
                                  VIRTUAL, "lo {{20 70}}Mbps")
         ], \
         "packet_duplicate": [
             ParameterizedAnomaly(TrafficControlAnomaly.PacketDuplicate("packet_duplicate"), \
-                                 HOST, "lo {{10 25}}"), \
+                                 PHYSICAL, "lo {{10 25}}"), \
             ParameterizedAnomaly(TrafficControlAnomaly.PacketDuplicate("packet_duplicate"), \
                                  VIRTUAL, "lo {{10 25}}")
         ], \
         "packet_corruption": [
             ParameterizedAnomaly(TrafficControlAnomaly.PacketCorruption("packet_corruption"), \
-                                 HOST, "lo {{10 25}}"), \
+                                 PHYSICAL, "lo {{10 25}}"), \
             ParameterizedAnomaly(TrafficControlAnomaly.PacketCorruption("packet_corruption"), \
                                  VIRTUAL, "lo {{10 25}}")
         ], \
         "packet_reordering": [
             ParameterizedAnomaly(TrafficControlAnomaly.PacketReordering("packet_reordering"), \
-                                 HOST, "lo {{10 25}}"), \
+                                 PHYSICAL, "lo {{10 25}}"), \
             ParameterizedAnomaly(TrafficControlAnomaly.PacketReordering("packet_reordering"), \
                                  VIRTUAL, "lo {{10 25}}")
         ], \

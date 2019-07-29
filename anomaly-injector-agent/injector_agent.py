@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
-import logging, atexit, random, re, argparse, time, requests
+import logging
+import atexit
+import random
+import argparse
+import time
+import requests
 import datetime
-
+import re
 import threading
 
-import logging_config
 import anomaly_list
-from timeplan import Timeplan, TimeplanItem
 from anomalies import anomaly
 from anomalies.anomaly import *
 from anomalies.anomaly_network import *
@@ -17,6 +20,9 @@ from anomalies.anomaly_process_python import *
 
 from api.rest_api import create_app
 
+PHYSICAL = "PHYSICAL"
+VIRTUAL = "VIRTUAL"
+SERVICE = "SERVICE"
 
 class AnomalyEngine(object):
 
@@ -288,13 +294,6 @@ class DataLabellingClient(object):
     def __str__(self):
         return "Data Labelling (%s)" % (self.url)
 
-symbolic_names = { \
-    "VNF": ".+@.+", \
-    "VM": "^[^@]+\.ims4$|^[^@]+.+balancer.+|^[^@]+.+video.+|^CORD.+", \
-    "PHYS": "^wally...$", \
-    "HOST": "^([^@]+\.ims4)|(wally...)$" \
-}
-
 def get_all_anomalies():
     return [\
         NoopAnomaly("noop"),\
@@ -310,124 +309,85 @@ def get_all_anomalies():
         TrafficControlAnomaly.Latency("latency"),\
     ]
 
-def get_all_parameterized_anomalies(hostname, api_port):
+PHYSICAL_KEYS = ["physical", "hypervisor", "wally", "baremetal"]
+VIRTUAL_KEYS = ["virtual", "vm", "virtual-machine"]
+SERVICE = ["service","process"]
+
+def get_all_parameterized_anomalies(anomaly_pool, api_port):
     parameterized = anomaly_list.get_parametrized_anomalies()
+    identifier = ""
+    if anomaly_pool.lower() in PHYSICAL_KEYS:
+         identifier = PHYSICAL
+    elif anomaly_pool.lower() in VIRTUAL_KEYS:
+         identifier = VIRTUAL
+    elif anomaly_pool.lower() in SERVICE:
+         identifier = SERVICE
 
     result = []
     for name, anomalyList in parameterized.items():
         for anomaly in anomalyList:
-            if anomaly.allowed is None:
+            if anomaly.anomaly_pool_type is None:
                 anomaly.anomaly.default_parameters = anomaly.default_parameters
                 result.append(anomaly.anomaly)
                 break
             else:
-                regex = re.compile(anomaly.allowed)
-                if regex.match(hostname) is not None:
+                if anomaly.anomaly_pool_type == identifier:
                     print(anomaly.anomaly.name + ": " + anomaly.anomaly.default_parameters)
-
                     anomaly.anomaly.default_parameters = anomaly.default_parameters
                     result.append(anomaly.anomaly)
                     break
     return result
 
 class ParameterizedAnomaly(object):
-    def __init__(self, anomaly, allowed, default_parameters):
+    def __init__(self, anomaly, anomaly_pool_type, default_parameters):
         self.anomaly = anomaly
-        self.allowed = allowed
+        self.anomaly_pool_type = anomaly_pool_type
         self.default_parameters = default_parameters
 
+def configure_logging(logging_level,filename=None):
+    if filename is None:
+        logging.basicConfig(format='%(asctime)s %(message)s', level=logging_level)
+    else:
+        logging.basicConfig(filename=filename,format='%(asctime)s %(message)s', level=logging_level)
+    logging.getLogger("requests").setLevel(logging_level)
+    logging.getLogger("urllib3").setLevel(logging_level)
 
-class TimeplanThread(threading.Thread):
-
-    def __init__(self, engine, interval):
-        threading.Thread.__init__(self)
-        self.engine = engine
-        self.interval = interval
-
-    def run(self):
-        cv = self.engine.mode_condition
-        while True:
-            with cv:
-                cv.wait()
-                while self.engine.current_mode == "timeplan":
-                    self.engine.assert_correct_timeplan_anomaly
-                    time.sleep(self.interval)
-                logging.info("Timeplan mode stopped")
-
-def injector_service_main(args):
-    global symbolic_names
-    logging_config.configure_logging()
-    plan = None
-
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-host", dest='own_host', required=True, help="Own hostname.")
-    parser.add_argument("-delay", type=int, default=0, help="The scenario will start this many seconds from now")
-    parser.add_argument("-start", type=parse_date_parameter, default=None, help="Specify a datetime (%s) or time (%s) when to start the scenario" %
-                                (TimeplanItem.time_format.replace("%", ""), TimeplanItem.duration_format.replace("%", "")))
-    parser.add_argument("-scenario", dest='scenario', type=str, required=False, help="Scenario CSV file")
-    parser.add_argument("-cooldown", type=positive_int, default=30, help="Number of seconds after each injected anomaly")
     parser.add_argument("-collector-host", dest='collector_host', type=str, default="localhost", help="Host of data-collection-agent for configuring running anomaly")
     parser.add_argument("-collector-port", dest='collector_port', type=int, default=7777, help="Port of data-collection-agent for configuring running anomaly")
-    parser.add_argument("-all-hosts", dest='all_hosts', type=str, help="Comma separated list of all hosts")
-    parser.add_argument("-interval", type=positive_int, default=3, help="Number of seconds between asserting that the correct anomaly is running")
-    parser.add_argument("-loop-scenario", dest='loop_scenario', action='store_true', help="Let the scenario loop indefinitely")
-    parser.add_argument("-force-future-start", dest='force_future', action='store_true', help="Fail if the scenario starts in the future")
-    parser.add_argument("-simulate", action='store_true', help="Do not execute the anomalies, but show which host should be injected at each time")
-    parser.add_argument("-pre-inject-sleep", dest="pre_inject_sleep", type=positive_int, default=0, help="Make certain anomalies sleep before the actual injection")
-    parser.add_argument("-api-port", dest="api_port", type=positive_int, default=7888, help="Port on which the REST API should be running")
     parser.add_argument("-set-collector-tags", dest="set_tags", type=bool, default=False, help="Set and reset local target tags on each injection")
+    parser.add_argument("-api-port", dest="api_port", type=positive_int, default=7888, help="Port on which the REST API should be running")
+    parser.add_argument("-anomaly-pool",dest="anomaly_pool", type=str, default="physical",help="set available anomalies based on predefined configurations [physical, virtual, service]")
+
+    ld_group = parser.add_argument_group("logging and debug")
+    ld_group.add_argument("-log",help="Redirect logs to a given file in addition to the console.",metavar='')
+    ld_group.add_argument("-v",action='store_true',help=" Set log level to Debug (default is Info)")
+
     args = parser.parse_args()
-
-    if args.scenario:
-        plan = Timeplan.fromCsv(args.scenario)
-        if args.start is None:
-            if args.force_future:
-                raise ValueError("-delay must be positive: %s" % args.delay)
-            plan.set_start_time_future(datetime.timedelta(seconds=args.delay))
-        else:
-            if args.delay != 0:
-                raise ValueError("Cannot specify both -delay and -start")
-            if args.force_future and args.start < datetime.datetime.now():
-                raise ValueError("Specified -start time is already in the past: %s" % args.start)
-            plan.set_start_time(args.start)
-        if args.loop_scenario:
-            plan.loop = True
-        print(plan)
-    if args.all_hosts is not None:
-        if plan == None:
-            raise(ValueError("The -all-hosts parameter only works in combination with -scenario.\n Please provide -scenario:"))
-        plan.extend_for_hosts(args.all_hosts.split(","), datetime.timedelta(seconds=args.cooldown), symbolic_names, "FILLER")
-        if len(plan.plan) == 0:
-            raise(ValueError("The given list of all hosts did not match any item in the plan: %s" % args.all_hosts))
-    if args.pre_inject_sleep > 0:
-        anomaly.pre_inject_sleep_millis = args.pre_inject_sleep
-
-    client = DataLabellingClient(args.collector_host, args.collector_port)
-    # all_anomalies = get_all_anomalies()
-    all_anomalies = get_all_parameterized_anomalies(args.own_host, args.api_port)
-    logging.info("Available anomalies: %s" % [ x.name for x in all_anomalies ] )
-
-    if args.simulate:
-        logging.info("Simulating which host should be injected...")
-        while True:
-            items = plan.getAllCurrentItems()
-            if len(items) == 0:
-                logging.info("Nothing injected")
-            else:
-                for i in items:
-                    logging.info("Injected now: [" + str(i.index) + "] " + i.print_in_current_iteration(plan))
-            time.sleep(args.interval)
+    log_level = logging.INFO
+    if args.v:
+        log_level = logging.DEBUG
+        logging.debug("debug mode enabled")
+    if args.log:
+        logfile = args.log
+        configure_logging(log_level,logfile)
     else:
-        engine = AnomalyEngine(client, all_anomalies, [args.own_host], args.set_tags)
-        if args.scenario:
-            engine.timeplan = plan
-        engine.register_atexit_cleanup()
-        timeplan_thread = TimeplanThread(engine, args.interval)
-        timeplan_thread.start()
-        logging.info("Starting REST API#")
-        app = create_app(engine)
-        app.run(host='0.0.0.0', port=args.api_port, threaded=True)
+        configure_logging(log_level)
 
+    if args.collector_host and args.collector_port:
+        client = DataLabellingClient(args.collector_host, args.collector_port)
+    if (args.collector_host and not args.collector_port) or (args.collector_port and not args.collector_host):
+        logging.warning("Could not initiate data labeling on collector due to missing collector_port or collector_host parameter ...") 
+        
+    all_anomalies = get_all_parameterized_anomalies(args.anomaly_pool, args.api_port)
+    logging.info("Available anomalies: %s" % [ x.name for x in all_anomalies ] )
+    engine = AnomalyEngine(client, all_anomalies, [args.own_host], args.set_tags)
+    engine.register_atexit_cleanup()
+    logging.info("Starting REST API ...")
+    app = create_app(engine)
+    app.run(host='0.0.0.0', port=args.api_port, threaded=True)
 
 def parse_date_parameter(arg):
     try:
@@ -440,7 +400,6 @@ def parse_date_parameter(arg):
             pass
     raise argparse.ArgumentTypeError("Not a valid date or time: %s" % arg)
 
-
 def positive_int(arg):
     ivalue = int(arg)
     if ivalue <= 0:
@@ -448,6 +407,4 @@ def positive_int(arg):
     return ivalue
 
 if __name__ == "__main__":
-    import sys
-
-    injector_service_main(sys.argv[1:])
+    main()

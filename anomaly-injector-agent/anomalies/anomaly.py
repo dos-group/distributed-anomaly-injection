@@ -48,7 +48,6 @@ class Anomaly(object):
             import time
             time.sleep(sleep_time)
 
-
 class NoopAnomaly(Anomaly):
     def __init__(self, name):
         super(NoopAnomaly, self).__init__(name)
@@ -64,12 +63,3 @@ class NoopAnomaly(Anomaly):
 
     def status(self):
         return self.running
-
-
-if __name__ == "__main__":
-    import logging, logging_config
-
-    logging_config.configure_logging()
-    anomaly = NoopAnomaly()
-    logging.info(str(anomaly))
-    anomaly.inject("someparam")
