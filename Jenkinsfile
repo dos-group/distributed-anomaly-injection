@@ -68,7 +68,7 @@ cpipeline {
             steps {
                 dir('anomaly-injector-agent') {
                     script {
-                        dockerImage = docker.build registry + ':$BRANCH_NAME-build-$BUILD_NUMBER'
+                        dockerImage = docker.build registry + ':$BRANCH_NAME-build-$BUILD_NUMBER', '-f slim.Dockerfile .'
                         dockerImageARM32 = docker.build registry + ':$BRANCH_NAME-build-$BUILD_NUMBER', '-f arm32v7.Dockerfile .'
                     }
                 }
