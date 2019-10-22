@@ -51,10 +51,10 @@ pipeline {
                         def scannerHome = tool 'sonar-scanner-linux'
                         withSonarQubeEnv('CIT SonarQube') {
                             sh """
-                                ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=anomaly-injector-agent -Dsonar.branch.name=$BRANCH_NAME \
+                                ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=distributed-anomaly-injection -Dsonar.branch.name=$BRANCH_NAME \
                                     -Dsonar.sources=. \
                                     -Dsonar.inclusions="**/*.py" -Dsonar.exclusions="anomalies/c_src/*" \
-                                    -Dsonar.python.coverage.reportPaths=tests/coverage-report.xml \
+                                    -Dsonar.test.reportPath=tests/test-report.xml
                             """
                         }
                     }
