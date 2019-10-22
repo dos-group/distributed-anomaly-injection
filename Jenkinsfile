@@ -52,7 +52,7 @@ pipeline {
                         withSonarQubeEnv('CIT SonarQube') {
                             sh """
                                 ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=distributed-anomaly-injection -Dsonar.branch.name=$BRANCH_NAME \
-                                    -Dsonar.sources=anomaly-injector-agent \
+                                    -Dsonar.sources=./anomaly-injector-agent \
                                     -Dsonar.inclusions="**/*.py" -Dsonar.exclusions="anomalies/c_src/*" \
                                     -Dsonar.test.reportPath=anomaly-injector-agent/tests/test-report.xml
                             """
