@@ -30,6 +30,7 @@ public class HostGroupInjectionController {
 
 
     //    Runtime control
+    private Endpoint currentEndpoint;
     private AnomalyGroup currentAnomaly;
     private Map<AnomalyGroup, Integer> injectionCounter;
 
@@ -67,6 +68,10 @@ public class HostGroupInjectionController {
         return currentAnomaly;
     }
 
+    public Endpoint getCurrentEndpoint() {
+        return currentEndpoint;
+    }
+
     public HostGroup getHostGroup() {
         return hostGroup;
     }
@@ -79,6 +84,7 @@ public class HostGroupInjectionController {
         AnomalyGroup result = null;
         result = this.selector.selectNextAnomalyGroup(this.hostGroup.getAnomalyGroups());
         if (result != null){
+            this.currentEndpoint = this.hostGroup.getRandomEndpoint();
             if (anomalyMaxInjectionCount > 0) {
                 if (injectionCounter.containsKey(result) && injectionCounter.get(result) > anomalyMaxInjectionCount) {
                     result = null;
@@ -123,14 +129,14 @@ public class HostGroupInjectionController {
         checkRequestController();
         if (anomalyGroup != null) {
             logger.log(Level.INFO, "Starting anomaly " + anomalyGroup.toString() + " on host group " +
-                    hostGroup.getName() + ": ");
+                    hostGroup.getName() + " on endpoint " + this.currentEndpoint.toString() + ": ");
             JSONObject params;
             for (Anomaly anomaly : anomalyGroup.getAnomalies()) {
                 String anomalyID = anomaly.getId_name();
-                logger.log(Level.INFO, getAnomalyAPIEndpoint(anomalyID));
+                logger.log(Level.INFO, getAnomalyAPIEndpoint(this.currentEndpoint, anomalyID));
                 params = anomaly.getParamsAsJSON();
                 params.put("time", backupRevertTime + "");
-                requestController.post(this.getAnomalyAPIEndpoint(anomalyID), params);
+                requestController.post(this.getAnomalyAPIEndpoint(this.currentEndpoint, anomalyID), params);
             }
         }
         this.currentAnomaly = anomalyGroup;
@@ -143,16 +149,16 @@ public class HostGroupInjectionController {
             logger.log(Level.INFO, "Stopping anomaly " + anomalyGroup.toString() + " on " + hostGroup.getName() + " at: ");
             for (Anomaly anomaly : anomalyGroup.getAnomalies()) {
                 String anomalyID = anomaly.getId_name();
-                logger.log(Level.INFO, getAnomalyAPIEndpoint(anomalyID));
-                requestController.delete(this.getAnomalyAPIEndpoint(anomalyID), true);
+                logger.log(Level.INFO, getAnomalyAPIEndpoint(this.currentEndpoint, anomalyID));
+                requestController.delete(this.getAnomalyAPIEndpoint(this.currentEndpoint, anomalyID), true);
             }
         }
         this.currentAnomaly = null;
         return anomalyGroup;
     }
 
-    private String getAnomalyAPIEndpoint(String anomaly) {
-        return this.hostGroup.getRandomEndpoint() + ANOMALY_PATH + anomaly + "/";
+    private String getAnomalyAPIEndpoint(Endpoint endpoint, String anomaly) {
+        return endpoint.getEndpoint() + ANOMALY_PATH + anomaly + "/";
     }
 
     private void checkRequestController() throws InvalidParameterException {

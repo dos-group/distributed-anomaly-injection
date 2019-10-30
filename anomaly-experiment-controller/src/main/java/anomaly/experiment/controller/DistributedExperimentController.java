@@ -231,7 +231,7 @@ public class DistributedExperimentController {
     private void runExperiment(int numberOfInjections) throws InterruptedException, ScriptHookUpException {
         // Loop until shutdown flag is set
         while (!shutdown) {
-            Pair<HostGroupInjectionController, AnomalyGroup> result = selector.getNextAnomaly();
+            Pair<HostGroupInjectionController, AnomalyGroup> result = selector.getNextInjectionTarget();
             if (result != null) {
                 this.currentHostGroupInjectionController = result.getLeft();
                 AnomalyGroup anomalyGroup = result.getRight();
@@ -259,7 +259,7 @@ public class DistributedExperimentController {
     private void runExperiment(long stopTime) throws InterruptedException, ScriptHookUpException {
         //Loop as long as the end time is not reached
         while (new Date().getTime() < stopTime && !shutdown) {
-            Pair<HostGroupInjectionController, AnomalyGroup> result = selector.getNextAnomaly();
+            Pair<HostGroupInjectionController, AnomalyGroup> result = selector.getNextInjectionTarget();
             this.currentHostGroupInjectionController = result.getLeft();
             AnomalyGroup anomalyGroup = result.getRight();
             if (anomalyGroup != null) {
@@ -274,7 +274,7 @@ public class DistributedExperimentController {
         long anomalyRuntime = anomalyTimeSelector.getTime();
 
         this.unsetTags(clsTagKeys);
-        this.setAnomalyAndRcaTags(anomalyGroup, this.currentHostGroupInjectionController.getHostGroup().getName());
+        this.setAnomalyAndRcaTags(anomalyGroup, this.currentHostGroupInjectionController.getCurrentEndpoint().getComponent());
         this.currentHostGroupInjectionController.startNextAnomaly(anomalyGroup, (int) (anomalyRuntime + autoRecoveryDelay));
         Thread.sleep(anomalyRuntime);
         if (!this.suppressAnomalyReverting)
@@ -313,25 +313,25 @@ public class DistributedExperimentController {
             cac.removeTags(tagKeys);
     }
 
-    private void setAnomalyTags(AnomalyGroup anomalyGroup, String injectorTargetName) {
+    private void setAnomalyTags(AnomalyGroup anomalyGroup, String component) {
         Map<String, String> tags = new HashMap<>();
-        tags.put(ANOMALY_TAG_KEY, injectorTargetName + "|" + anomalyGroup.getName());
+        tags.put(ANOMALY_TAG_KEY, component + "|" + anomalyGroup.getName());
         for (CollectorAgentController cac : collectorAgentController)
             cac.setTags(tags);
     }
 
-    private void setRcaTags(AnomalyGroup anomalyGroup, String InjectorTargetName) {
+    private void setRcaTags(String component) {
         Map<String, String> tags = new HashMap<>();
-        tags.put(RCA_TAG_KEY, InjectorTargetName);
+        tags.put(RCA_TAG_KEY, component);
         for (CollectorAgentController cac : collectorAgentController)
             cac.setTags(tags);
     }
 
     /* fewer requests compared to use setrcatags and setanomaly tags */
-    private void setAnomalyAndRcaTags(AnomalyGroup anomalyGroup, String injectorTargetName) {
+    private void setAnomalyAndRcaTags(AnomalyGroup anomalyGroup, String component) {
         Map<String, String> tags = new HashMap<>();
-        tags.put(RCA_TAG_KEY, injectorTargetName);
-        tags.put(ANOMALY_TAG_KEY, injectorTargetName + "|" + anomalyGroup.getName());
+        tags.put(RCA_TAG_KEY, component);
+        tags.put(ANOMALY_TAG_KEY, component + "|" + anomalyGroup.getName());
         for (CollectorAgentController cac : collectorAgentController)
             cac.setTags(tags);
     }
@@ -392,7 +392,7 @@ public class DistributedExperimentController {
     }
 
     public interface HostGroupSelector {
-        Pair<HostGroupInjectionController, AnomalyGroup> getNextAnomaly();
+        Pair<HostGroupInjectionController, AnomalyGroup> getNextInjectionTarget();
     }
 
     public static class RoundRobinSelector implements HostGroupSelector {
@@ -407,7 +407,7 @@ public class DistributedExperimentController {
         }
 
         @Override
-        public Pair<HostGroupInjectionController, AnomalyGroup> getNextAnomaly() {
+        public Pair<HostGroupInjectionController, AnomalyGroup> getNextInjectionTarget() {
             // Run anomalies on targets one after another
             if (this.injectorTargetIndex < this.hostGroupInjectionController.size()) {
                 HostGroupInjectionController injectorTarget = this.hostGroupInjectionController.get(this.injectorTargetIndex++);
@@ -416,7 +416,7 @@ public class DistributedExperimentController {
                     this.anomalyInjectionCounter++;
                     return new Pair<>(injectorTarget, a);
                 } else {
-                    return getNextAnomaly();
+                    return getNextInjectionTarget();
                 }
             } else {
                 this.injectorTargetIndex = 0;
@@ -443,7 +443,7 @@ public class DistributedExperimentController {
         }
 
         @Override
-        public Pair<HostGroupInjectionController, AnomalyGroup> getNextAnomaly() {
+        public Pair<HostGroupInjectionController, AnomalyGroup> getNextInjectionTarget() {
             if (this.hostGroupInjectionController.isEmpty()) {
                 return null; // Exit for recursive method call
             }
@@ -457,7 +457,7 @@ public class DistributedExperimentController {
                 a = injectorTarget.getNextAnomaly();
                 if (a == null) {
                     this.hostGroupInjectionController.remove(randomIndex); // Remove if anomaly limit is reached
-                    return getNextAnomaly();
+                    return getNextInjectionTarget();
                 } else {
                     return new Pair<>(injectorTarget, a);
                 }

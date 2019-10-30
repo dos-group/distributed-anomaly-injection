@@ -33,12 +33,14 @@ anomalyGroups:
 hostGroups:
   - name: wally193-instance-000000ec
     anomalyGroups: *id002
-    endpoint:
+    endpoints:
       - http://10.0.42.20:7888
 
   - name: wally193-instance-000000ed
     anomalyGroups: *id002
-    endpoint:
-      -
+    endpoints:
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name:
+        component: wally193-instance-000000ed
       - http://10.0.42.71:7888
 

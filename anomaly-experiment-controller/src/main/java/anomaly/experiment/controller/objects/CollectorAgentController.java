@@ -23,7 +23,7 @@ public class CollectorAgentController {
     private RequestSender requestController;
 
     public CollectorAgentController(Endpoint endpoint, RequestSender requestController) {
-        this.endpoint = this.endpoint;
+        this.endpoint = endpoint;
         this.requestController = requestController;
     }
 

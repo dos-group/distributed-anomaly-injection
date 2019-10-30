@@ -20,6 +20,7 @@ public class HostGroup {
 
 //    Runtime control
     private AnomalyGroup currentAnomaly;
+    private Endpoint currentEndpoint;
 
 
     public HostGroup(String name, List<Endpoint> endpoints, List<AnomalyGroup> anomalyGroups) {
