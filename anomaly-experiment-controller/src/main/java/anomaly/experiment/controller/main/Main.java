@@ -265,7 +265,7 @@ public class Main {
 
         int i = 0;
         for (String ce : collectorEndpoints) {
-            Endpoint endpoint = new Endpoint(ce, "collector", "collector");
+            Endpoint endpoint = new Endpoint("collector", "collector", ce);
             CollectorAgentController cac = new CollectorAgentController(endpoint, requestSender);
             collectorAgentController.add(cac);
         }
