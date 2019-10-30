@@ -19,17 +19,17 @@ public class CollectorAgentController {
     private static final String TAGS_PATH = "/api/tags";
     private static final String TAG_PATH = "/api/tag";
 
-    private Host host;
+    private Endpoint endpoint;
     private RequestSender requestController;
 
-    public CollectorAgentController(Host host, RequestSender requestController) {
-        this.host = host;
+    public CollectorAgentController(Endpoint endpoint, RequestSender requestController) {
+        this.endpoint = endpoint;
         this.requestController = requestController;
     }
 
     public void startFileOutput() throws InvalidParameterException {
         checkRequestController();
-        logger.log(Level.INFO, "Starting file output of collector " + host.getName() + " at " +
+        logger.log(Level.INFO, "Starting file output of collector " + endpoint.getName() + " at " +
                 getFileOutputAPIEndpoint());
         if (!requestController.post(this.getFileOutputAPIEndpoint()))
             logger.warning("Unable to start file output.");
@@ -37,32 +37,32 @@ public class CollectorAgentController {
 
     public void stopFileOutput() throws InvalidParameterException {
         checkRequestController();
-        logger.log(Level.INFO, "Stopping file output of collector " + host.getName() + " at " +
+        logger.log(Level.INFO, "Stopping file output of collector " + endpoint.getName() + " at " +
                 getFileOutputAPIEndpoint());
         if (!requestController.delete(this.getFileOutputAPIEndpoint(), false))
             logger.warning("Unable to stop file output.");
     }
 
     private String getFileOutputAPIEndpoint() {
-        return this.host.getEndpoint() + FILE_OUTPUT_PATH;
+        return this.endpoint.getEndpoint() + FILE_OUTPUT_PATH;
     }
 
     public void setTags(Map<String, String> tags) {
         checkRequestController();
         logger.log(Level.INFO, "Setting tags " + mapToString(tags) +
-                " on collector " + host.getName() + " at " + getTagsAPIEndpoint());
+                " on collector " + endpoint.getName() + " at " + getTagsAPIEndpoint());
         if (!requestController.query(this.getTagsAPIEndpoint(), tags))
             logger.warning("Unable to set tags.");
     }
 
     private String getTagsAPIEndpoint() {
-        return this.host.getEndpoint() + TAGS_PATH;
+        return this.endpoint.getEndpoint() + TAGS_PATH;
     }
 
     public void removeTags(Set<String> tagKeys) {
         checkRequestController();
         logger.log(Level.INFO, "Removing tags " + setToString(tagKeys) +
-                " on collector " + host.getName() + " at " + getTagsAPIEndpoint());
+                " on collector " + endpoint.getName() + " at " + getTagsAPIEndpoint());
         boolean success = true;
         for (String tagKey : tagKeys)
             success = success && requestController.delete(this.getTagAPIEndpoint(tagKey), false);
@@ -71,7 +71,7 @@ public class CollectorAgentController {
     }
 
     private String getTagAPIEndpoint(String tagKey) {
-        return this.host.getEndpoint() + TAG_PATH + "/" + tagKey;
+        return this.endpoint.getEndpoint() + TAG_PATH + "/" + tagKey;
     }
 
     private String mapToString(Map<String, String> map) {
@@ -95,6 +95,6 @@ public class CollectorAgentController {
 
     @Override
     public String toString() {
-        return host.toString();
+        return endpoint.toString();
     }
 }

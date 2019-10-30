@@ -9,21 +9,21 @@ import java.util.Map;
 public class AnomalyScenario {
 
     private Map<String, List<AnomalyGroup>> anomalyGroups;
-    private List<Host> hosts;
+    private List<HostGroup> hostGroups;
 
     public AnomalyScenario() {
     }
 
-    public AnomalyScenario(List<Host> hosts) {
-        this.hosts = hosts;
+    public AnomalyScenario(List<HostGroup> hostGroups) {
+        this.hostGroups = hostGroups;
     }
 
-    public List<Host> getHosts() {
-        return hosts;
+    public List<HostGroup> getHostGroups() {
+        return hostGroups;
     }
 
-    public void setHosts(List<Host> hosts) {
-        this.hosts = hosts;
+    public void setHostGroups(List<HostGroup> hostGroups) {
+        this.hostGroups = hostGroups;
     }
 
     public Map<String, List<AnomalyGroup>> getAnomalyGroups() {

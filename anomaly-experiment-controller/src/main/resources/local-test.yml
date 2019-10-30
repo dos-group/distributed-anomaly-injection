@@ -59,12 +59,14 @@ anomalyGroups:
       - {id_name: stress_hdd, parameters: "--hdd=1"}
       - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=40"}
 
-hosts:
+hostGroups:
   - name: localhost
-    endpoint: http://localhost:7777
     anomalyGroups: *id001
+    endpoints:
+      -http://localhost:7777
 
   - name: localhost
-    endpoint: http://localhost:7777
     anomalyGroups: *id002
+    endpoints:
+      - http://localhost:7777
 

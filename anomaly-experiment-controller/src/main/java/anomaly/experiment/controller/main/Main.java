@@ -1,16 +1,14 @@
 package anomaly.experiment.controller.main;
 
 import anomaly.experiment.controller.DistributedExperimentController;
-import anomaly.experiment.controller.objects.AnomalyScenario;
-import anomaly.experiment.controller.objects.CollectorAgentController;
-import anomaly.experiment.controller.objects.Host;
-import anomaly.experiment.controller.objects.InjectorAgentController;
+import anomaly.experiment.controller.objects.*;
 import anomaly.experiment.controller.requests.HTTPRequestSender;
 import anomaly.experiment.controller.requests.MockRequestSender;
 import anomaly.experiment.controller.requests.RequestSender;
 import anomaly.experiment.controller.utils.CommandExecuter;
 import anomaly.experiment.controller.utils.Config;
 import anomaly.experiment.controller.utils.UnirestUtils;
+import anomaly.experiment.controller.utils.Utils;
 import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -55,11 +52,21 @@ public class Main {
                         "exactly this amount of times on the host. Either this or the -t argument is " +
                         "required in order to determine the experiment duration.").build());
         o.addOption(Option.builder("t_anomaly").hasArg().desc(
-                "Runtime of each anomaly. Last character determines dimension. Possible dimensions:" +
-                        " s, m, h, d (seconds, minutes, hours, days). Default is 5 minutes").build());
+                "Runtime of each anomaly. Is defined as random distribution. First character determines distribution " +
+                        "type (C - constant, N - Normal distribution, E - Equal distribution). " +
+                        "After that, the time value(s) are defined. Normal and equal  distributions require two time values " +
+                        "separated by ':'. Last character determines dimension. Possible dimensions:" +
+                        " s, m, h, d (seconds, minutes, hours, days). Default is C5m (constant 5 minutes)." +
+                        "Examples for normal distribution (N[mean value]:[standard deviation]: N5m30s, N30s10s, N45s10m." +
+                        "Example for equal distribution (E[lower bound]:[upper bound]: E5s:10s, E10m:20m").build());
         o.addOption(Option.builder("t_load").hasArg().desc(
-                "Runtime of load between anomalies. Last character determines dimension. Possible dimensions: " +
-                        "s, m, h, d (seconds, minutes, hours, days). Default is 5 minutes").build());
+                "Runtime of each anomaly. Is defined as random distribution. First character determines distribution " +
+                        "type (C - constant, N - Normal distribution, E - Equal distribution). " +
+                        "After that, the time value(s) are defined. Normal and equal  distributions require two time values " +
+                        "separated by ':'. Last character determines dimension. Possible dimensions:" +
+                        " s, m, h, d (seconds, minutes, hours, days). Default is C5m (constant 5 minutes)." +
+                        "Examples for normal distribution (N[mean value]:[standard deviation]: N5m30s, N30s10s, N45s10m." +
+                        "Example for equal distribution (E[lower bound]:[upper bound]: E5s:10s, E10m:20m").build());
         o.addOption(Option.builder("t_initial_load").hasArg().desc(
                 "Runtime of initial load. Time at beginning of experiment, where no anomalies will be triggered. " +
                         "Last character determines dimension. Possible dimensions: " +
@@ -74,6 +81,12 @@ public class Main {
                 "the time after which the anomaly should be auto-reverted by the injector agent itself. " +
                 "Last character determines dimension. Possible dimensions: s, m, h, d (seconds, " +
                 "minutes, hours, days).").build());
+        o.addOption(Option.builder("anomaly_group_selection").hasArgs().desc("Controls how anomaly groups are " +
+                "selected for each host. 'iter' will select anomalies one after another while 'random' will pick random" +
+                " anomaly groups for injection.").build());
+        o.addOption(Option.builder("host_group_selection").hasArgs().desc("Controls how host groups are " +
+                "selected for anomaly injection. 'rr' will select host group in round robin fashion while 'random' will pick random" +
+                " host groups for injection.").build());
         o.addOption(Option.builder("run_mock_mode").desc("If set, no real requests will be sent. " +
                 " Can be used to test experiment in dry run to see if it behaves as intended.").build());
         final CommandLine flags;
@@ -83,6 +96,11 @@ public class Main {
             e.printStackTrace();
             return;
         }
+
+        //Yaml yaml = new Yaml(new Constructor(AnomalyScenario.class));
+        //HostGroup hg1 = new HostGroup();
+        //HostGroup hg2 = new HostGroup();
+        //AnomalyScenario as = new AnomalyScenario();
 
         //Path to inventory file.
         String inventoryFilePath = flags.getOptionValue("i");
@@ -94,7 +112,7 @@ public class Main {
         } else if (flags.hasOption("t")) { // Ending experiment based on time
             //Get duration of the whole experiment in milliseconds
             String tmp = flags.getOptionValue("t");
-            long experimentDuration = getDurationInMS(
+            long experimentDuration = Utils.getDurationInMS(
                     Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
             //Calculate end of experiment
             stopTime = new Date().getTime() + experimentDuration;
@@ -113,24 +131,20 @@ public class Main {
         long t_initialLoad = 0;
         if (flags.hasOption("t_initial_load")) {
             String tmp = flags.getOptionValue("t_initial_load");
-            t_initialLoad = getDurationInMS(
+            t_initialLoad = Utils.getDurationInMS(
                     Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
         }
 
-        //Get duration of each injected anomaly
-        long t_anomaly = 0;
+        // duration of each injected anomaly
+        String t_anomaly = "C5m";
         if (flags.hasOption("t_anomaly")) {
-            String tmp = flags.getOptionValue("t_anomaly");
-            t_anomaly = getDurationInMS(Integer.parseInt(
-                    tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
+            t_anomaly = flags.getOptionValue("t_anomaly");
         }
 
-        //Get time between each anomaly injection
-        long t_load = 0;
+        // duration of each injected anomaly
+        String t_load = "C5m";
         if (flags.hasOption("t_load")) {
-            String tmp = flags.getOptionValue("t_load");
-            t_load = getDurationInMS(Integer.parseInt(
-                    tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
+            t_load = flags.getOptionValue("t_load");
         }
 
         //Collector endpoints used for documentation of anomaly injections
@@ -151,15 +165,25 @@ public class Main {
         }
 
         //Get duration of initial load
-        long auto_recovery_delay = -1;
+        long auto_recovery_delay = 0;
         if (flags.hasOption("auto_recovery_delay")) {
             String tmp = flags.getOptionValue("auto_recovery_delay");
-            auto_recovery_delay = getDurationInMS(
+            auto_recovery_delay = Utils.getDurationInMS(
                     Integer.parseInt(tmp.substring(0, tmp.length() - 1)), tmp.charAt(tmp.length() - 1));
         }
 
         boolean suppressAnomalyReverting = flags.hasOption("suppress_anomaly_reverting");
         boolean run_mock_mode = flags.hasOption("run_mock_mode");
+
+        String anomalyGroupSelector = "iter";
+        if (flags.hasOption("anomaly_group_selection")) {
+            anomalyGroupSelector = flags.getOptionValue("anomaly_group_selection");
+        }
+
+        String hostGroupSelector = "rr";
+        if (flags.hasOption("host_group_selection")) {
+            hostGroupSelector = flags.getOptionValue("host_group_selection");
+        }
 
 
         //Initialize unirest API. Only one time.
@@ -190,8 +214,8 @@ public class Main {
         }
 
         //Injector agent controller initialization
-        List<InjectorAgentController> injectorAgentController = getInjectorAgentController(
-                scenario, requestSender, numberInjection);
+        List<HostGroupInjectionController> hostGroupInjectionController = getInjectorAgentController(
+                scenario, requestSender, numberInjection, anomalyGroupSelector);
         //Collector agent controller initialization
         List<CollectorAgentController> collectorAgentController = new ArrayList<>();
         if (collectorEndpoints != null && collectorEndpoints.length > 0) {
@@ -200,20 +224,14 @@ public class Main {
         }
 
         final DistributedExperimentController controller = new DistributedExperimentController(
-                injectorAgentController, collectorAgentController);
-
-        //Create time selection for anomaly and load
-        DistributedExperimentController.TimeSelector timeSelector_anomaly =
-                controller.new ConstantTimeSelector(t_anomaly);
-        DistributedExperimentController.TimeSelector timeSelector_load =
-                controller.new ConstantTimeSelector(t_load);
-
-        controller.setAnomalyTimeSelector(timeSelector_anomaly);
-        controller.setLoadTimeSelector(timeSelector_load);
-        controller.setPathPostInjectionScript(pathPostInjectionScript);
-        controller.setSuppressAnomalyReverting(suppressAnomalyReverting);
-        if(auto_recovery_delay > 0)
-            controller.setAutoRecoveryDelay(auto_recovery_delay);
+                hostGroupInjectionController,
+                collectorAgentController,
+                pathPostInjectionScript,
+                suppressAnomalyReverting,
+                auto_recovery_delay,
+                DistributedExperimentController.getHostGroupSelector(hostGroupSelector, hostGroupInjectionController),
+                DistributedExperimentController.getTimeSelector(t_anomaly),
+                DistributedExperimentController.getTimeSelector(t_load));
 
         //Set shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -229,48 +247,16 @@ public class Main {
         }
     }
 
-    /**
-     * Convert a duration value to milliseconds.
-     *
-     * @param duration  Numerical value representing the duration.
-     * @param dimension Character represents the dimension of the duration. Can be [s]econds, [m]inutes,
-     *                  [h]ours or [d]ays.
-     * @return Duration value in milliseconds.
-     */
-    private static long getDurationInMS(long duration, char dimension) {
-        TimeUnit t;
-        switch (dimension) {
-            case 's':
-                t = TimeUnit.SECONDS;
-                break;
-            case 'm':
-                t = TimeUnit.MINUTES;
-                break;
-            case 'h':
-                t = TimeUnit.HOURS;
-                break;
-            case 'd':
-                t = TimeUnit.DAYS;
-                break;
-            default:
-                throw new IllegalArgumentException(String.format("Character %c is not a valid dimension.", dimension));
+    private static List<HostGroupInjectionController> getInjectorAgentController(
+            AnomalyScenario scenario, RequestSender requestSender, int numberOfAnomalyInjections,
+            String anomalyGroupSelector) {
+        List<HostGroupInjectionController> hostGroupInjectionController = new ArrayList<>();
+        for (HostGroup hg : scenario.getHostGroups()) {
+            HostGroupInjectionController iac = new HostGroupInjectionController(hg, requestSender, numberOfAnomalyInjections,
+                    anomalyGroupSelector);
+            hostGroupInjectionController.add(iac);
         }
-        if (duration <= 0) {
-            throw new IllegalArgumentException(String.format("Duration must be positive > 0, " +
-                    "but was set to %d", duration));
-        }
-
-        return t.toMillis(duration);
-    }
-
-    private static List<InjectorAgentController> getInjectorAgentController(
-            AnomalyScenario scenario, RequestSender requestSender, int numberOfAnomalyInjections) {
-        List<InjectorAgentController> injectorAgentController = new ArrayList<>();
-        for (Host h : scenario.getHosts()) {
-            InjectorAgentController iac = new InjectorAgentController(h, requestSender, numberOfAnomalyInjections);
-            injectorAgentController.add(iac);
-        }
-        return injectorAgentController;
+        return hostGroupInjectionController;
     }
 
     private static List<CollectorAgentController> getCollectorAgentController(
@@ -278,9 +264,9 @@ public class Main {
         List<CollectorAgentController> collectorAgentController = new ArrayList<>();
 
         int i = 0;
-        for (String endpoint : collectorEndpoints) {
-            CollectorAgentController cac = new CollectorAgentController(
-                    new Host("collector_" + i++, endpoint, null), requestSender);
+        for (String ce : collectorEndpoints) {
+            Endpoint endpoint = new Endpoint(ce, "collector", "collector");
+            CollectorAgentController cac = new CollectorAgentController(endpoint, requestSender);
             collectorAgentController.add(cac);
         }
         return collectorAgentController;

@@ -4,8 +4,8 @@
 # fluct_mem --sleep=[value in s] --memory=[value in MB] --max_memory=[value in MB]
 # stress_mem --vm=[value] --vm-bytes=[value in [b|k|m|g]]
 # stress_cpu --cpu=[value] --cpu-load=[value]
-# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
-# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
+# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
+# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
 # stress_hdd --hdd=[value]
 # download
 # latency [list of network interfaces] [value in ms]
@@ -63,15 +63,22 @@ anomalyGroups:
        - {id_name: stress_hdd, parameters: "--hdd={{1 3}}"}
        - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=40"}
 
-hosts:
-  - name: wally181
-    endpoint: http://130.149.249.191:7777
+hostGroups:
+  - name: wally181_183
     anomalyGroups: *id001
+    endpoints:
+      - http://130.149.249.191:7777
+      - http://130.149.249.192:7777
+      - http://130.149.249.193:7777
 
-  - name: wally182
-    endpoint: http://130.149.249.192:7777
+  - name: wally184
     anomalyGroups: *id001
+    endpoints:
+      - http://130.149.249.194:7777
 
-  - name: test_vm
-    endpoint: http://10.0.42.45:7777
+  - name: test_vms
     anomalyGroups: *id002
+    endpoints:
+      - http://10.0.42.45:7777
+      - http://10.0.42.70:7777
+      - http://10.0.42.50:7777
