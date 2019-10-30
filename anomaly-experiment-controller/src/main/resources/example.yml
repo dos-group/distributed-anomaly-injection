@@ -4,8 +4,8 @@
 # fluct_mem --sleep=[value in s] --memory=[value in MB] --max_memory=[value in MB]
 # stress_mem --vm=[value] --vm-bytes=[value in [b|k|m|g]]
 # stress_cpu --cpu=[value] --cpu-load=[value]
-# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
-# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
+# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
+# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
 # stress_hdd --hdd=[value]
 # download
 # latency [list of network interfaces] [value in ms]

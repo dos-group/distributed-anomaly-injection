@@ -1,3 +1,4 @@
+
 anomalyGroups_vm: &HOST_ANOMALIES_BACKEND
   - name: stress_cpu_host_backend
     anomalies:

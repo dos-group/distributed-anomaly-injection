@@ -8,7 +8,6 @@ import anomaly.experiment.controller.utils.CommandExecuter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -377,7 +376,7 @@ public class DistributedExperimentController {
                 //are reset and can be started in the next round.
                 if (anomalyInjectionCounter == 0) {
                     for (InjectorAgentController iac : injectorAgentController) {
-                        iac.resetNextAnomalyIndex();
+                        iac.resetAnomalySelector();
                     }
                 }
                 anomalyInjectionCounter = 0;
