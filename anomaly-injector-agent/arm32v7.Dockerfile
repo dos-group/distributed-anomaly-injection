@@ -5,7 +5,8 @@ ENV CPULIMIT_VERSION=0.2
 
 RUN apt-get update && apt-get install -y \
     make \
-    gcc \
+    #gcc \
+    gcc-arm-linux-gnueabi \
 && rm -rf /var/lib/apt/lists/*
 
 # download stress-ng and cpulimit
@@ -20,22 +21,22 @@ RUN tar -xf V${STRESS_VERSION}.tar.gz && mv stress-ng-${STRESS_VERSION} stress-n
 
 # make c projects
 WORKDIR /src/stress-ng
-RUN STATIC=1 make
+RUN STATIC=1 make CC=arm-linux-gnueabi-gcc
 
 WORKDIR /src/cpulimit
-RUN make
+RUN make CC=arm-linux-gnueabi-gcc
 
 WORKDIR /src/c_src/disk_pollution
-RUN make clean && make
+RUN make clean && make CC=arm-linux-gnueabi-gcc 
 
 WORKDIR /src/c_src/fork_flooding
-RUN make clean && make
+RUN make clean && make CC=arm-linux-gnueabi-gcc
 
 WORKDIR /src/c_src/mem_alloc
-RUN make clean && make
+RUN make clean && make CC=arm-linux-gnueabi-gcc
 
 # build slim stretch image
-FROM python:3.6-slim-stretch
+FROM arm32v7/python:3.6-slim-stretch
 
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -45,9 +46,9 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     && rm -rf /var/lib/apt/lists/* 
 
+
 WORKDIR /usr/src/app
 COPY . .
-
 # copy binaries of build image
 WORKDIR anomalies/binaries
 COPY --from=build /src/stress-ng/stress-ng .
@@ -62,8 +63,14 @@ RUN cp cpulimit vnf_cpulimit && \
     cp disk_pollution vnf_disk_pollution && \
     cp mem_alloc vnf_mem_alloc && \
     cp stress-ng vnf_stress-ng
-
+RUN ln -s /lib/arm-linux-gnueabihf/ld-linux.so.3 /lib/ld-linux.so.3
 WORKDIR /usr/src/app
+# enable piwheels for arm builds
+RUN echo '[global]\n\
+    extra-index-url=https://www.piwheels.org/simple\n\
+    '\
+> /etc/pip.conf
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 ENTRYPOINT [ "python3.6", "./injector_agent.py" ]
