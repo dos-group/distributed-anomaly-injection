@@ -14,14 +14,14 @@ import java.util.logging.Logger;
 /**
  * Created by alex on 20.02.19.
  */
-public class InjectorAgentController {
+public class HostGroupInjectionController {
 
     public static final String ANOMALY_PATH = "/api/anomalies/";
     public static final String STATUS_PATH = "/api/status/";
-    private static final Logger logger = Logger.getLogger(InjectorAgentController.class.getName());
+    private static final Logger logger = Logger.getLogger(HostGroupInjectionController.class.getName());
     private static final String HTTP_PREFIX = "http://";
 
-    private final Host host;
+    private final HostGroup hostGroup;
     private final RequestSender requestController;
 
     private final int anomalyMaxInjectionCount;
@@ -33,22 +33,22 @@ public class InjectorAgentController {
     private AnomalyGroup currentAnomaly;
     private Map<AnomalyGroup, Integer> injectionCounter;
 
-    public InjectorAgentController(Host host, RequestSender requestController, int anomalyMaxInjectionCount,
-                                   AnomalyGroupSelector selector) {
-        this.host = host;
+    public HostGroupInjectionController(HostGroup hostGroup, RequestSender requestController, int anomalyMaxInjectionCount,
+                                        AnomalyGroupSelector selector) {
+        this.hostGroup = hostGroup;
         this.requestController = requestController;
         this.anomalyMaxInjectionCount = anomalyMaxInjectionCount;
         if (anomalyMaxInjectionCount > 0) {
             this.injectionCounter = new HashMap<>();
-            for (AnomalyGroup anomalyGroup : this.host.getAnomalyGroups())
+            for (AnomalyGroup anomalyGroup : this.hostGroup.getAnomalyGroups())
                 injectionCounter.put(anomalyGroup, 0);
         }
         this.selector = selector;
     }
 
-    public InjectorAgentController(Host host, RequestSender requestController, int anomalyMaxInjectionCount,
-                                   String selector) {
-        this(host, requestController, anomalyMaxInjectionCount, getAnomalyGroupSelector(selector));
+    public HostGroupInjectionController(HostGroup hostGroup, RequestSender requestController, int anomalyMaxInjectionCount,
+                                        String selector) {
+        this(hostGroup, requestController, anomalyMaxInjectionCount, getAnomalyGroupSelector(selector));
     }
 
     private static AnomalyGroupSelector getAnomalyGroupSelector(String selector) {
@@ -67,8 +67,8 @@ public class InjectorAgentController {
         return currentAnomaly;
     }
 
-    public Host getHost() {
-        return host;
+    public HostGroup getHostGroup() {
+        return hostGroup;
     }
 
     public int getAnomalyMaxInjectionCount() {
@@ -77,13 +77,15 @@ public class InjectorAgentController {
 
     public AnomalyGroup getNextAnomaly() {
         AnomalyGroup result = null;
-        result = this.selector.selectNextAnomalyGroup(this.host.getAnomalyGroups());
-        if (anomalyMaxInjectionCount > 0) {
-            if (injectionCounter.containsKey(result) && injectionCounter.get(result) > anomalyMaxInjectionCount) {
-                result = null;
-            } else {
-                // Is initialized at constructor
-                injectionCounter.put(result, injectionCounter.get(result) + 1);
+        result = this.selector.selectNextAnomalyGroup(this.hostGroup.getAnomalyGroups());
+        if (result != null){
+            if (anomalyMaxInjectionCount > 0) {
+                if (injectionCounter.containsKey(result) && injectionCounter.get(result) > anomalyMaxInjectionCount) {
+                    result = null;
+                } else {
+                    // Is initialized at constructor
+                    injectionCounter.put(result, injectionCounter.get(result) + 1);
+                }
             }
         }
         return result;
@@ -108,19 +110,20 @@ public class InjectorAgentController {
 
     public InjectorStatus getInjectorStatus() throws InvalidParameterException {
         checkRequestController();
-        logger.log(Level.INFO, "Getting status from " + host.getName() + " at " + getStatusAPIEndpoint());
+        logger.log(Level.INFO, "Getting status from " + hostGroup.getName() + " at " + getStatusAPIEndpoint());
         return requestController.get(this.getStatusAPIEndpoint(), InjectorStatus.class);
     }
 
     private String getStatusAPIEndpoint() {
-        return host.getEndpoint() + ":" + STATUS_PATH;
+        return hostGroup.getRandomEndpoint() + ":" + STATUS_PATH;
     }
 
     public AnomalyGroup startNextAnomaly(AnomalyGroup anomalyGroup, int backupRevertTime)
             throws InvalidParameterException {
         checkRequestController();
         if (anomalyGroup != null) {
-            logger.log(Level.INFO, "Starting anomaly " + anomalyGroup.toString() + " on:" + host.getName() + " at: ");
+            logger.log(Level.INFO, "Starting anomaly " + anomalyGroup.toString() + " on host group " +
+                    hostGroup.getName() + ": ");
             JSONObject params;
             for (Anomaly anomaly : anomalyGroup.getAnomalies()) {
                 String anomalyID = anomaly.getId_name();
@@ -137,7 +140,7 @@ public class InjectorAgentController {
     public AnomalyGroup stopAnomaly(AnomalyGroup anomalyGroup) throws InvalidParameterException {
         checkRequestController();
         if (anomalyGroup != null) {
-            logger.log(Level.INFO, "Stopping anomaly " + anomalyGroup.toString() + " on " + host.getName() + " at: ");
+            logger.log(Level.INFO, "Stopping anomaly " + anomalyGroup.toString() + " on " + hostGroup.getName() + " at: ");
             for (Anomaly anomaly : anomalyGroup.getAnomalies()) {
                 String anomalyID = anomaly.getId_name();
                 logger.log(Level.INFO, getAnomalyAPIEndpoint(anomalyID));
@@ -149,7 +152,7 @@ public class InjectorAgentController {
     }
 
     private String getAnomalyAPIEndpoint(String anomaly) {
-        return this.host.getEndpoint() + ANOMALY_PATH + anomaly + "/";
+        return this.hostGroup.getRandomEndpoint() + ANOMALY_PATH + anomaly + "/";
     }
 
     private void checkRequestController() throws InvalidParameterException {
@@ -159,12 +162,11 @@ public class InjectorAgentController {
 
     @Override
     public String toString() {
-        return host.toString();
+        return hostGroup.toString();
     }
 
     private interface AnomalyGroupSelector {
         AnomalyGroup selectNextAnomalyGroup(List<AnomalyGroup> groups);
-
         void reset();
     }
 

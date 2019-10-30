@@ -4,8 +4,8 @@
 # fluct_mem --sleep=[value in s] --memory=[value in MB] --max_memory=[value in MB]
 # stress_mem --vm=[value] --vm-bytes=[value in [b|k|m|g]]
 # stress_cpu --cpu=[value] --cpu-load=[value]
-# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
-# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s]
+# leak_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
+# fluct_cpu --cpu=[value] --init-load=[value] --load-growth=[value] --sleep=[value in s] --load-limit=[value]
 # stress_hdd --hdd=[value]
 # download
 # latency [list of network interfaces] [value in ms]
@@ -24,21 +24,33 @@
 # Thereby a uniformly distributed random value will be inserted that lies between min and max.
 
 anomalyGroups:
-  groups_vm: &id002
+  groups_host: &id001
   - !!anomaly.experiment.controller.objects.AnomalyGroup
-      name: mem_leak
+      name: stress_cpu_host
       anomalies:
-        - {id_name: mem_leak, parameters: "--sleep=1 --memory=4"}
+        - {id_name: stress_cpu, parameters: "--cpu=8 --cpu-load={{90 100}}"}
 
 hostGroups:
-  - name: wally193-instance-000000ec
-    anomalyGroups: *id002
-    endpoint:
-      - http://10.0.42.20:7888
+  - name: wally181_183
+    anomalyGroups: *id001
+    endpoints:
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally181
+        component: wally181
+        endpoint: http://130.149.249.191:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally182
+        component: wally182
+        endpoint: http://130.149.249.192:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally183
+        component: wally183
+        endpoint: http://130.149.249.193:7777
 
-  - name: wally193-instance-000000ed
-    anomalyGroups: *id002
-    endpoint:
-      -
-      - http://10.0.42.71:7888
-
+  - name: wally184
+    anomalyGroups: *id001
+    endpoints:
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally184
+        component: wally184
+        endpoint: http://130.149.249.194:7777
