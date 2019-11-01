@@ -60,13 +60,19 @@ anomalyGroups:
       - {id_name: stress_cpu, parameters: "--cpu=2 --cpu-load=40"}
 
 hostGroups:
-  - name: localhost
+  - name: localhost-group-1
     anomalyGroups: *id001
     endpoints:
-      -http://localhost:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: localhost
+        component: localhost
+        endpoint: http://localhost:7777
 
-  - name: localhost
+  - name: localhost-group-2
     anomalyGroups: *id002
     endpoints:
-      - http://localhost:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: localhost
+        component: localhost
+        endpoint: http://localhost:7777
 
