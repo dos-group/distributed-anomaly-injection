@@ -65,20 +65,41 @@ anomalyGroups:
 
 hostGroups:
   - name: wally181_183
-    anomalyGroups: *id001
+    anomalyGroups: *id002
     endpoints:
-      - http://130.149.249.191:7777
-      - http://130.149.249.192:7777
-      - http://130.149.249.193:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally181
+        component: wally181
+        endpoint: http://130.149.249.191:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally182
+        component: wally182
+        endpoint: http://130.149.249.192:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally183
+        component: wally183
+        endpoint: http://130.149.249.193:7777
 
   - name: wally184
     anomalyGroups: *id001
     endpoints:
-      - http://130.149.249.194:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: wally184
+        component: wally184
+        endpoint: http://130.149.249.194:7777
 
   - name: test_vms
     anomalyGroups: *id002
     endpoints:
-      - http://10.0.42.45:7777
-      - http://10.0.42.70:7777
-      - http://10.0.42.50:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: vm1
+        component: some_libvirt_id-1
+        endpoint: http://10.0.42.45:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: vm2
+        component: some_libvirt_id-2
+        endpoint: http://10.0.42.70:7777
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: vm3
+        component: some_libvirt_id-3
+        endpoint: http://10.0.42.50:7777

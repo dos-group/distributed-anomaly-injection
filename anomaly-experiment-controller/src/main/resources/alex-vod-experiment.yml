@@ -31,16 +31,19 @@ anomalyGroups:
         - {id_name: mem_leak, parameters: "--sleep=1 --memory=4"}
 
 hostGroups:
-  - name: wally193-instance-000000ec
-    anomalyGroups: *id002
-    endpoints:
-      - http://10.0.42.20:7888
-
-  - name: wally193-instance-000000ed
+  - name: group-vod-balancer
     anomalyGroups: *id002
     endpoints:
       - !!anomaly.experiment.controller.objects.Endpoint
-        name:
+        name: vod-balancer
+        component: wally193-instance-000000ec
+        endpoint: http://10.0.42.20:7888
+
+  - name: group-vod-server
+    anomalyGroups: *id002
+    endpoints:
+      - !!anomaly.experiment.controller.objects.Endpoint
+        name: vod-server
         component: wally193-instance-000000ed
-      - http://10.0.42.71:7888
+        endpoint: http://10.0.42.71:7888
 
