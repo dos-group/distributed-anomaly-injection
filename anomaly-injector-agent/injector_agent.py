@@ -9,7 +9,7 @@ import requests
 import datetime
 import re
 import threading
-
+import netifaces
 import anomaly_list
 from anomalies import anomaly
 from anomalies.anomaly import *
@@ -17,6 +17,8 @@ from anomalies.anomaly_network import *
 from anomalies.anomaly_cpu import *
 from anomalies.anomaly_process import *
 from anomalies.anomaly_process_python import *
+from wan_simulation.wan_simulation import *
+from wan_simulation.traffic_control_simulation import *
 
 from api.rest_api import create_app
 
@@ -30,9 +32,10 @@ class AnomalyEngine(object):
     shutting_down = False
     http_tag_timeout = 30 # seconds. Since we do regular POSTs, pick a small timeout.
 
-    def __init__(self, labelling_client, all_anomalies, own_hostnames, set_tags):
+    def __init__(self, labelling_client, all_anomalies, all_simulations, own_hostnames, set_tags):
         self.labelling_client = labelling_client
         self.all_anomalies = all_anomalies
+        self.all_simulations = all_simulations
         self.own_hostnames = own_hostnames
         self.timeplan = None
         self.last_parameters = {}
@@ -207,6 +210,8 @@ class AnomalyEngine(object):
         self.shutting_down = True
         self.labelling_client.reset_label(self.SHUTTING_DOWN_RETRIES)
         self.assert_anomaly(None, "")
+        for sim in self.current_running_simulations():
+            sim.stop()
 
     def set_mode(self, mode):
         if self.current_running_anomalies():
@@ -224,6 +229,46 @@ class AnomalyEngine(object):
         self.timeplan = Timeplan.fromCsv(timeplan)
         logging.info("Timeplan set to:")
         print(self.timeplan)
+
+    def interface_exist(self, interface):
+        try:
+            netifaces.ifaddresses(interface)
+            return True
+        except ValueError as err:
+            return False
+
+    def get_all_wan_simulations(self):
+        ifaces = netifaces.interfaces()
+        all_sim = []
+        for iface in ifaces:
+            tmp = TrafficControlSimulation(iface)
+            all_sim.append(tmp)
+        return all_sim
+
+    def current_running_simulations(self):
+        current_simulations = []
+        for sim in self.all_simulations:
+            if sim.is_running():
+                current_simulations.append(sim)
+        return current_simulations
+
+    def lookup_simulation(self, interface):
+        if interface is None:
+            return None
+        for sim in self.all_simulations:
+            if sim.interface == interface:
+                return sim
+        return None
+
+    def start_simulation(self, simulation, payload, update=False, add_rule=False):
+        logging.info("Starting simulation on " + simulation.interface)
+        return simulation.start(payload, update, add_rule)
+
+    def stop_simulation(self, simulation):
+        simulation.stop()
+
+    def simulation_running(self, simulation):
+        return simulation.is_running()
 
 
 class DataLabellingClient(object):
@@ -352,6 +397,14 @@ def configure_logging(logging_level,filename=None):
     logging.getLogger("requests").setLevel(logging_level)
     logging.getLogger("urllib3").setLevel(logging_level)
 
+def get_all_wan_simulations():
+    ifaces = netifaces.interfaces()
+    all_sim = []
+    for iface in ifaces:
+        tmp = TrafficControlSimulation(iface)
+        all_sim.append(tmp)
+    return all_sim
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-host", dest='own_host', required=True, help="Own hostname.")
@@ -382,8 +435,10 @@ def main():
         logging.warning("Could not initiate data labeling on collector due to missing collector_port or collector_host parameter ...") 
         
     all_anomalies = get_all_parameterized_anomalies(args.anomaly_pool, args.api_port)
+    all_simulations = get_all_wan_simulations()
     logging.info("Available anomalies: %s" % [ x.name for x in all_anomalies ] )
-    engine = AnomalyEngine(client, all_anomalies, [args.own_host], args.set_tags)
+    logging.info("Available interfaces for WAN simulation: %s" % [x.interface for x in all_simulations])
+    engine = AnomalyEngine(client, all_anomalies, all_simulations, [args.own_host], args.set_tags)
     engine.register_atexit_cleanup()
     logging.info("Starting REST API ...")
     app = create_app(engine)
