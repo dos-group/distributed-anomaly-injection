@@ -5,6 +5,7 @@ from api.endpoints.anomaly import ns as anomaly_namespace
 from api.endpoints.status import ns as status_namespace
 from api.endpoints.modus import ns as modus_namespace
 from api.endpoints.timeplan import ns as timeplan_namespace
+from api.endpoints.wan import ns as wan_simulation_namespace
 from api.restplus import api
 
 def initialize(app):
@@ -14,6 +15,7 @@ def initialize(app):
     api.add_namespace(status_namespace)
     api.add_namespace(modus_namespace)
     api.add_namespace(timeplan_namespace)
+    api.add_namespace(wan_simulation_namespace)
     app.register_blueprint(blueprint)
 
 
