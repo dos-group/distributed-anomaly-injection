@@ -129,10 +129,8 @@ pipeline {
                                 // The jacoco reports must be given file-wise, while the junit reports are read from the entire directory
                                 sh '''
                                     mvn sonar:sonar -B -V -Dsonar.projectKey=anomaly-experiment-controller -Dsonar.branch.name=$BRANCH_NAME \
-                                        -Dsonar.sources=src/main/java -Dsonar.tests=src/test/java \
-                                        -Dsonar.inclusions="**/*.java" -Dsonar.test.inclusions="src/test/java/**/*.java" \
-                                        -Dsonar.junit.reportPaths=target/surefire-reports \
-                                        -Dsonar.jacoco.reportPaths=$(find target/coverage-reports -name '*.exec' | paste -s -d , -)
+                                        -Dsonar.sources=src/main/java \
+                                        -Dsonar.inclusions="**/*.java" \
                                 '''
                             }  
                             timeout(time: 10, unit: 'MINUTES') {
