@@ -10,9 +10,12 @@ pipeline {
     }
     environment {
         registry = 'teambitflow/anomaly-injector-agent'
+        registryController = 'teambitflow/anomaly-experiment-controller'
         registryCredential = 'dockerhub'
         dockerImage = '' // Variable must be declared here to allow passing an object between the stages.
         dockerImageARM32 = ''
+        dockerImageController = ''
+        dockerImageControllerARM32 = ''
     }
     stages {
         // no tests as of right now
@@ -43,25 +46,116 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'teambitflow/maven-docker:3.6-jdk-11'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
-                dir('anomaly-injector-agent') {
-                    script {
-                        // sonar-scanner which don't rely on JVM
-                        def scannerHome = tool 'sonar-scanner-linux'
-                        withSonarQubeEnv('CIT SonarQube') {
-                            sh """
-                                ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=distributed-anomaly-injection -Dsonar.branch.name=$BRANCH_NAME \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.inclusions="**/*.py" -Dsonar.exclusions="anomalies/c_src/*" \
-                                    -Dsonar.test.reportPath=tests/test-report.xml
-                            """
+                sh 'mvn clean test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V'
+            }
+        }
+        stage('Test') {
+            agent {
+                docker {
+                    image 'teambitflow/maven-docker:3.6-jdk-11'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                sh 'mvn test -B -V'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/TEST-*.xml'
+                    jacoco classPattern: 'target/classes,target/test-classes', execPattern: 'target/coverage-reports/*.exec', inclusionPattern: '**/*.class', sourcePattern: 'src/main/java,src/test/java'
+                    archiveArtifacts 'target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/coverage-reports/*.exec'
+                }
+            }
+        }
+        stage('Package') {
+            agent {
+                docker {
+                    image 'teambitflow/maven-docker:3.6-jdk-11'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                sh 'mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B -V'
+            }
+            post {
+                success {
+                    archiveArtifacts 'anomaly-experiment-controller/target/*.jar'
+                }
+            }
+        }
+        stage('SonarQube') {
+            parallel {
+                stage('anomaly-injector-agent') {
+                    steps {
+                        dir('anomaly-injector-agent') {
+                            script {
+                                // sonar-scanner which don't rely on JVM
+                                def scannerHome = tool 'sonar-scanner-linux'
+                                withSonarQubeEnv('CIT SonarQube') {
+                                    sh """
+                                        ${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=distributed-anomaly-injection -Dsonar.branch.name=$BRANCH_NAME \
+                                            -Dsonar.sources=. \
+                                            -Dsonar.inclusions="**/*.py" -Dsonar.exclusions="anomalies/c_src/*" \
+                                            -Dsonar.test.reportPath=tests/test-report.xml
+                                    """
+                                }
+                            }
+                            timeout(time: 30, unit: 'MINUTES') {
+                                waitForQualityGate abortPipeline: true
+                            }
                         }
                     }
-                    timeout(time: 30, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
+                }
+                stage('anomaly-experiment-controller') {
+                    agent {
+                        docker {
+                            image 'teambitflow/maven-docker:3.6-jdk-11'
+                            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                    }
+                    steps {
+                        dir('anomaly-experiment-controller'){
+                            withSonarQubeEnv('CIT SonarQube') {
+                                // The find & paste command in the jacoco line lists the relevant files and prints them, separted by comma
+                                // The jacoco reports must be given file-wise, while the junit reports are read from the entire directory
+                                sh '''
+                                    mvn sonar:sonar -B -V -Dsonar.projectKey=bitflow4j -Dsonar.branch.name=$BRANCH_NAME \
+                                        -Dsonar.sources=src/main/java -Dsonar.tests=src/test/java \
+                                        -Dsonar.inclusions="**/*.java" -Dsonar.test.inclusions="src/test/java/**/*.java" \
+                                        -Dsonar.junit.reportPaths=target/surefire-reports \
+                                        -Dsonar.jacoco.reportPaths=$(find target/coverage-reports -name '*.exec' | paste -s -d , -)
+                                '''
+                            }  
+                            timeout(time: 10, unit: 'MINUTES') {
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
                     }
                 }
+            }
+        }
+        stage('Maven Install') {
+            agent {
+                docker {
+                    image 'teambitflow/maven-docker:3.6-jdk-11'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            when {
+                branch 'master'
+            }
+            steps {
+                // Only install the jar, that has been built in the previous stages. Do not re-compile or re-test.
+                sh 'mvn jar:jar install:install -B -V'
             }
         }
         stage('Docker build') {
@@ -72,8 +166,15 @@ pipeline {
                         dockerImageARM32 = docker.build registry + ':$BRANCH_NAME-build-$BUILD_NUMBER-arm32v7', '-f arm32v7.Dockerfile .'
                     }
                 }
+                dir('anomaly-experiment-controller') {
+                    script {
+                        dockerImageController = docker.build registryController + ':$BRANCH_NAME-build-$BUILD_NUMBER', '-f Dockerfile .'
+                        dockerImageControllerARM32 = docker.build registryController + ':$BRANCH_NAME-build-$BUILD_NUMBER-arm32v7', '-f arm32v7.Dockerfile .'
+                    }
+                }
             }
         }
+
         stage('Docker push') {
             when {
                 branch 'master'
@@ -104,6 +205,33 @@ pipeline {
                         sh "docker manifest create ${registry}:latest ${registry}:latest-amd64 ${registry}:latest-arm32v7"
                         sh "docker manifest annotate ${registry}:latest ${registry}:latest-arm32v7 --os linux --arch arm"
                         sh "docker manifest push --purge ${registry}:latest"
+                    }  
+                }
+                dir('anomaly-experiment-controller') {
+                    script {
+                        docker.withRegistry('', registryCredential) {
+                            dockerImageController.push("build-$BUILD_NUMBER")
+                            dockerImageController.push("latest-amd64")
+                            dockerImageControllerARM32.push("build-$BUILD_NUMBER-arm32v7")
+                            dockerImageControllerARM32.push("latest-arm32v7")
+                        }
+                    }
+                    withCredentials([
+                      [
+                        $class: 'UsernamePasswordMultiBinding',
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKERUSER',
+                        passwordVariable: 'DOCKERPASS'
+                      ]
+                    ]) {
+                        // Dockerhub Login
+                        sh '''#! /bin/bash
+                        echo $DOCKERPASS | docker login -u $DOCKERUSER --password-stdin
+                        '''
+                        // teambitflow/python-bitflow:latest manifest
+                        sh "docker manifest create ${registryController}:latest ${registryController}:latest-amd64 ${registryController}:latest-arm32v7"
+                        sh "docker manifest annotate ${registryController}:latest ${registryController}:latest-arm32v7 --os linux --arch arm"
+                        sh "docker manifest push --purge ${registryController}:latest"
                     }  
                 }
             }
