@@ -157,6 +157,12 @@ pipeline {
             }
         }
         stage('Docker build') {
+            agent {
+                docker {
+                    image 'teambitflow/maven-docker:3.6-jdk-11'
+                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
                 dir('anomaly-injector-agent') {
                     script {
