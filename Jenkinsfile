@@ -57,25 +57,25 @@ pipeline {
                 sh 'mvn clean test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V'
             }
         }
-        stage('Test') {
-            agent {
-                docker {
-                    image 'teambitflow/maven-docker:3.6-jdk-11'
-                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
-            steps {
-                sh 'mvn test -B -V'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/TEST-*.xml'
-                    jacoco classPattern: 'target/classes,target/test-classes', execPattern: 'target/coverage-reports/*.exec', inclusionPattern: '**/*.class', sourcePattern: 'src/main/java,src/test/java'
-                    archiveArtifacts 'target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/coverage-reports/*.exec'
-                }
-            }
-        }
+        //stage('Test') {
+        //    agent {
+        //        docker {
+        //            image 'teambitflow/maven-docker:3.6-jdk-11'
+        //            args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+        //        }
+        //    }
+        //    steps {
+        //        sh 'mvn test -B -V'
+        //    }
+        //    post {
+        //        always {
+        //            junit 'target/surefire-reports/TEST-*.xml'
+        //            jacoco classPattern: 'target/classes,target/test-classes', execPattern: 'target/coverage-reports/*.exec', inclusionPattern: '**/*.class', sourcePattern: 'src/main/java,src/test/java'
+        //            archiveArtifacts 'target/surefire-reports/TEST-*.xml'
+        //            archiveArtifacts 'target/coverage-reports/*.exec'
+        //        }
+        //    }
+        //}
         stage('Package') {
             agent {
                 docker {
